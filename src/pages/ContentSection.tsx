@@ -63,7 +63,7 @@ const ContentSection = forwardRef<HTMLDivElement>((props, ref) => {
                 <div className="absolute bottom-0 left-0 p-10 w-full text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
                     
                     {/* Title */}
-                    <h3 className="text-3xl font-bold uppercase leading-none mb-3 group-hover:text-[#28a745] transition-colors duration-300">
+                    <h3 className="text-3xl font-bold uppercase leading-none mb-3 transition-colors duration-300">
                         {item.title}
                     </h3>
                     

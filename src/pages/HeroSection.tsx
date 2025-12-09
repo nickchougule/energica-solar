@@ -3,8 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import ContentSection from "./ContentSection";
 // 1. IMPORT YOUR LOCAL IMAGE
-// import solar from "../assets/solar.avif";
-import solar from "../assets/solar-Panels.jpg"
+import solar from "../assets/solar-Panels.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -45,7 +44,7 @@ const HeroSection = () => {
                     start: "0% 0%",
                 }
             })
-            // ZOOM Effect (This is the animation you were missing)
+            // ZOOM Effect
             .to(img.current, { transform: "translateZ(2200px)" }) 
             // Text Moves Up & Fades Out
             .to(text1.current, { y: -300, opacity: 0 }, "<0.05") 
@@ -93,10 +92,13 @@ const HeroSection = () => {
                                 </span>
                             </h1>
 
-                            {/* Subtitle: SUSTAIN FOUNDATION (Green Pill) */}
+                            {/* Subtitle: SUSTAIN FOUNDATION (Clean White Text) */}
                             <h2 
                                 ref={text2} 
-                                className="mt-4 md:mt-6 text-[3vw] md:text-[24px] font-bold tracking-[0.2em] md:tracking-[0.5em] text-black bg-[#28a745] px-6 py-2 rounded-full shadow-xl"
+                                // Reduced size: text-[2vw] / 18px
+                                // Removed background pill
+                                // Added drop-shadow
+                                className="mt-4 md:mt-6 text-[2.5vw] md:text-[20px] font-bold tracking-[0.3em] text-white drop-shadow-md"
                             >
                                 SUSTAIN FOUNDATION
                             </h2>
@@ -105,13 +107,10 @@ const HeroSection = () => {
                     </div>
                 </div>
 
-                {/* --- THIS WAS MISSING IN YOUR SNIPPET --- */}
-                {/* The "last" div contains the ContentSection which slides up. */}
-                {/* Without this, the zoom animation timeline breaks. */}
+                {/* ContentSection linked via ref for GSAP slide-up */}
                 <div className="last">
                     <ContentSection ref={container} />
                 </div>
-
             </section>
         </div>
     );
