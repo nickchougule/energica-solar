@@ -82,11 +82,11 @@ const Navbar = () => {
 
                 {/* Logo */}
                 <motion.div
-                    onClick={() => navigateTo("/", "home",false)}
+                    onClick={() => navigateTo("/", "home", false)}
                     className="cursor-pointer z-[100]"
                     whileHover={{ scale: 1.05 }}
                 >
-                    <img src={logo} className="h-20 w-auto" />
+                    <img src={logo} className="h-20 w-auto" alt="Logo" />
                 </motion.div>
 
                 {/* Hamburger */}
@@ -105,12 +105,13 @@ const Navbar = () => {
                 ref={menuRef}
                 className="fixed top-0 right-0 w-screen h-screen bg-[#0b0b0b] text-white z-[90] flex flex-col justify-center items-center opacity-0 translate-x-[100%]"
             >
-                <ul className="flex flex-col gap-3 w-full max-w-2xl px-10 md:px-20">
+                <ul className="flex flex-col gap-4 w-full max-w-2xl px-10 md:px-20"> {/* Increased gap slightly for cleaner look */}
                     {navItems.map((item, idx) => (
                         <li key={idx} className="overflow-hidden">
                             <motion.button
                                 onClick={() => navigateTo(item.path, item.id)}
-                                className="menu-link-item block w-full text-4xl md:text-5xl font-bold uppercase tracking-tighter text-left py-3 group relative"
+                                // CHANGED: Reduced font size from text-4xl/5xl to text-2xl/4xl
+                                className="menu-link-item block w-full text-2xl md:text-4xl font-bold uppercase tracking-tighter text-left py-2 group relative"
                             >
                                 <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#28a745] group-hover:w-full transition-all duration-300"></span>
                                 <span className="relative text-white/90 group-hover:text-[#28a745] transition-colors duration-200">
