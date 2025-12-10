@@ -3,9 +3,7 @@ import HeroSection from './HeroSection';
 import MarqueeSection from './MarqueeSection'; // NEW
 import GallerySection from './GallerySection'; // (Schemes)
 // NEW
-import ContentSection from './ContentSection'; // (Training)
 import CTASection from './CTASection';
-import Footer from './Footer';
 import AboutSection from '../components/AboutSection';
 import TechSection from '../components/TechSection';
 import FAQSection from '../components/FAQSection';
@@ -51,7 +49,7 @@ const Home = () => {
 
         {/* FOOTER */}
         <div id="contact">
-            <Footer />
+            
         </div>
         
     </div>

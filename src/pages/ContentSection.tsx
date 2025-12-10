@@ -1,89 +1,177 @@
-import React, { forwardRef } from 'react';
-// IMPORT YOUR LOCAL IMAGES
+import React, { forwardRef, useLayoutEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/all';
+
+// IMPORT LOCAL IMAGES
 import PowerConnection from "../assets/PowerConnection.avif";
-import advise from "../assets/Advise-1.avif";
+import advise from "../assets/DistressedSolar.webp";
+import land from "../assets/land.avif";
+import contracts from "../assets/contracts.avif";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const data = [
+  {
+    id: "01",
+    title: "Distressed Assets",
+    short: "Revival Strategies",
+    desc: "Feasibility studies for reconstructing distressed assets. We assess market conditions, technical status, and financial viability to calculate ROI and minimize risks.",
+    img: advise
+  },
+  {
+    id: "02",
+    title: "Infra Development",
+    short: "Design & Execution",
+    desc: "End-to-end execution from site selection to commissioning. We handle permits, construction, and technology installation for seamless renewable energy integration.",
+    img: PowerConnection
+  },
+  {
+    id: "03",
+    title: "Land Procurement",
+    short: "Site Selection",
+    desc: "Strategic land acquisition near substations to minimize transmission costs. We ensure regulatory compliance and handle environmental impact assessments.",
+    img: land
+  },
+  {
+    id: "04",
+    title: "Energy Contracts",
+    short: "Drafting & Advisory",
+    desc: "Expert drafting of CapEx and OpEx proposals. Our third-party consultation ensures thorough evaluation to optimize financial and operational decisions.",
+    img: contracts
+  }
+];
 
 const ContentSection = forwardRef<HTMLDivElement>((props, ref) => {
-  
-  const data = [
-    {
-      title: "Renewable Distressed Assets",
-      short: "Assessment & Revival Strategies",
-      desc: "A feasibility study for reconstructing distressed renewable energy assets assesses market conditions, technical and financial status, reconstruction costs, and revenue projections. It reviews funding options, calculates ROI, and identifies risks.",
-      img: advise
-    },
-    {
-      title: "Infrastructure Development",
-      short: "Design, Planning & Execution",
-      desc: "Infrastructure development for renewable energy projects involves site selection, design, planning, and financing. It includes securing permits, constructing infrastructure, and installing technologies. Post-installation, systems are tested and commissioned.",
-      img: PowerConnection
-    }
-  ];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const cursorImgRef = useRef<HTMLImageElement>(null);
+  const [activeImg, setActiveImg] = useState(data[0].img);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      
+      // 1. Initial Fade In of the List
+      gsap.from(".service-item", {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 75%",
+        }
+      });
+
+      // 2. Mouse Follower Setup
+      const xTo = gsap.quickTo(cursorRef.current, "x", { duration: 0.4, ease: "power3" });
+      const yTo = gsap.quickTo(cursorRef.current, "y", { duration: 0.4, ease: "power3" });
+
+      const moveCursor = (e: MouseEvent) => {
+        xTo(e.clientX);
+        yTo(e.clientY);
+      };
+
+      window.addEventListener("mousemove", moveCursor);
+
+      return () => {
+        window.removeEventListener("mousemove", moveCursor);
+      };
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Handle Hover State
+  const handleMouseEnter = (img: string, rowId: string) => {
+    setActiveImg(img);
+    // Scale UP the cursor image
+    gsap.to(cursorRef.current, { scale: 1, opacity: 1, duration: 0.3 });
+    // Highlight the active row text
+    gsap.to(`.service-item-${rowId} .title`, { x: 20, color: "#28a745", duration: 0.3 });
+    gsap.to(`.service-item-${rowId} .arrow`, { opacity: 1, x: 0, duration: 0.3 });
+  };
+
+  const handleMouseLeave = (rowId: string) => {
+    // Scale DOWN the cursor image
+    gsap.to(cursorRef.current, { scale: 0, opacity: 0, duration: 0.3 });
+    // Reset row text
+    gsap.to(`.service-item-${rowId} .title`, { x: 0, color: "black", duration: 0.3 });
+    gsap.to(`.service-item-${rowId} .arrow`, { opacity: 0, x: -20, duration: 0.3 });
+  };
 
   return (
-    // Added z-50 to ensure it sits on top of the hero when it slides up
-    <div ref={ref} className="bg-white text-black min-h-screen w-screen relative z-50 flex flex-col items-center justify-center p-6 md:p-20 border-t border-gray-200">
+    <div ref={ref} className="bg-white text-black min-h-screen relative z-50 py-20 overflow-hidden cursor-none">
       
-      {/* 1. HEADER */}
-      <div className="text-center max-w-4xl mb-20 relative z-10">
-        <span className="uppercase tracking-widest text-xs md:text-sm mb-6 text-[#28a745] font-bold block">
-          We Evaluate, Consult And Advise
-        </span>
-        
-        <h2 className="text-5xl md:text-8xl font-bold uppercase tracking-tighter leading-none mb-10 text-black">
-          Expert <br/> <span className="text-gray-400">Advisory</span>
-        </h2>
-
-        <p className="text-lg md:text-xl text-gray-600 leading-relaxed font-light max-w-2xl mx-auto">
-          Providing critical insights that help lenders and clients make informed financing decisions and manage risks effectively throughout the project lifecycle.
-        </p>
+      {/* 1. FLOATING CURSOR IMAGE (Hidden by default, appears on hover) */}
+      <div 
+        ref={cursorRef}
+        className="fixed top-0 left-0 w-[400px] h-[250px] pointer-events-none z-50 rounded-lg overflow-hidden transform -translate-x-1/2 -translate-y-1/2 opacity-0 scale-0 shadow-2xl"
+      >
+        <img 
+            ref={cursorImgRef}
+            src={activeImg} 
+            alt="Service Preview" 
+            className="w-full h-full object-cover"
+        />
       </div>
 
-      {/* 2. CARDS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl relative z-10">
-        {data.map((item, idx) => (
-             <div 
-                key={idx} 
-                className="consult-card h-[500px] relative rounded-xl overflow-hidden group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-500 bg-gray-100"
-             >
-                {/* Background Image */}
-                <div className="absolute inset-0 w-full h-full">
-                    <img
-                        src={item.img}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                        loading="lazy" 
-                    />
-                </div>
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
+      <div ref={containerRef} className="max-w-7xl mx-auto px-6 md:px-10">
+        
+        {/* HEADER */}
+        <div className="mb-20 border-b border-gray-200 pb-10">
+            <span className="text-[#28a745] font-mono tracking-widest text-sm uppercase font-bold block mb-2">
+                Our Expertise
+            </span>
+            <h2 className="text-5xl md:text-8xl font-bold uppercase tracking-tighter leading-none text-black">
+                Advisory <span className="text-gray-300">Services</span>
+            </h2>
+        </div>
 
-                {/* Content Wrapper */}
-                <div className="absolute bottom-0 left-0 p-10 w-full text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                    
-                    {/* Title */}
-                    <h3 className="text-3xl font-bold uppercase leading-none mb-3 transition-colors duration-300">
-                        {item.title}
-                    </h3>
-                    
-                    {/* Subtitle */}
-                    <p className="text-sm font-mono text-gray-300 uppercase tracking-widest mb-6 border-b border-gray-600 pb-4 inline-block">
-                        {item.short}
-                    </p>
+        {/* LIST */}
+        <div className="flex flex-col">
+            {data.map((item, idx) => (
+                <div 
+                    key={idx}
+                    className={`service-item service-item-${idx} group relative border-b border-gray-200 py-12 transition-colors hover:bg-gray-50`}
+                    onMouseEnter={() => handleMouseEnter(item.img, idx.toString())}
+                    onMouseLeave={() => handleMouseLeave(idx.toString())}
+                >
+                    <div className="flex flex-col md:flex-row items-baseline justify-between gap-6 relative z-10">
+                        
+                        {/* Number & Title */}
+                        <div className="flex items-baseline gap-8 md:w-1/2">
+                            <span className="font-mono text-gray-300 text-xl">/{item.id}</span>
+                            <h3 className="title text-3xl md:text-5xl font-bold uppercase transition-transform duration-300">
+                                {item.title}
+                            </h3>
+                        </div>
 
-                    {/* Expandable Description */}
-                    <div className="max-h-0 overflow-hidden group-hover:max-h-[300px] transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
-                        <p className="text-sm text-gray-200 leading-relaxed">
-                            {item.desc}
-                        </p>
+                        {/* Short Desc & Arrow */}
+                        <div className="flex items-center gap-4 md:w-1/2 justify-between">
+                            <span className="font-mono text-sm uppercase tracking-widest text-gray-500">
+                                {item.short}
+                            </span>
+                            <span className="arrow text-[#28a745] text-3xl opacity-0 transform -translate-x-4 transition-all">
+                                ↗
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Expandable Details */}
+                    <div className="max-h-0 overflow-hidden group-hover:max-h-[200px] transition-all duration-500 ease-in-out">
+                        <div className="pt-6 md:pl-[120px] max-w-3xl">
+                            <p className="text-lg text-gray-600 leading-relaxed">
+                                {item.desc}
+                            </p>
+                        </div>
                     </div>
 
                 </div>
-            </div>
-        ))}
-      </div>
+            ))}
+        </div>
 
+      </div>
     </div>
   );
 });

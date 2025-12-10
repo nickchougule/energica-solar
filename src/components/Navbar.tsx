@@ -1,91 +1,128 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
+import { motion } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/Energica.png';
 
 const navItems = [
-  { name: "About Us", id: "about" },
-  { name: "Awareness Campaigns", id: "schemes" },
-  { name: "Training Campaigns", id: "training" },
-  { name: "Consultation", id: "consultation" },
-  { name: "Contact Us", id: "contact" }
+    { name: "About Us", id: "about", path: "/about" },
+    { name: "Awareness Campaigns", id: "schemes" },
+    { name: "Training Campaigns", id: "training" },
+    { name: "Consultation", id: "consultation" },
+    { name: "Contact Us", id: "contact" }
 ];
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ paused: true });
-      tl.to(menuRef.current, { y: 0, duration: 1, ease: "power4.inOut" });
-      tl.from(".menu-link", { y: 50, opacity: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, "-=0.5");
-      (menuRef.current as any).animation = tl;
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  const toggleMenu = () => {
-    const tl = (menuRef.current as any)?.animation;
-    if (tl) {
-      if (!isOpen) tl.play();
-      else tl.reverse();
-    }
-    setIsOpen(!isOpen);
-  };
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({
+                paused: true,
+                defaults: { duration: 0.8, ease: "power4.inOut" }
+            });
 
-  const handleScroll = (id: string) => {
-    toggleMenu();
-    setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }, 800);
-  };
+            tl.to(menuRef.current, {
+                x: 0,
+                skewX: 0,
+                opacity: 1,
+            });
 
-  return (
-    <div ref={containerRef}>
-      {/* TRANSPARENT NAVBAR */}
-      <nav className="fixed top-0 left-0 w-full z-[100] flex justify-between items-center px-6 md:px-10 py-4 bg-transparent text-white">
-        
-        {/* LOGO ONLY */}
-        <div className="cursor-pointer" onClick={() => handleScroll('home')}>
-             <img 
-                src={logo} 
-                alt="Energica Logo" 
-                className="h-20 w-auto object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
-             />
-        </div>
+            tl.from(".menu-link-item", {
+                y: 20,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.08,
+                ease: "power3.out",
+            }, "-=0.4");
 
-        {/* HAMBURGER BUTTON (White on Black) */}
-        <button onClick={toggleMenu} className="z-[100] group flex flex-col gap-1.5 cursor-pointer p-2 bg-black/50 backdrop-blur-md rounded-md border border-white/10">
-          <span className={`w-8 h-[2px] bg-white transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`}></span>
-          <span className={`w-8 h-[2px] bg-white transition-all duration-300 ${isOpen ? "opacity-0" : ""}`}></span>
-          <span className={`w-8 h-[2px] bg-white transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
-        </button>
-      </nav>
+            (menuRef.current as any).animation = tl;
+        }, containerRef);
 
-      {/* FULL SCREEN MENU - BLACK BACKGROUND */}
-      <div ref={menuRef} className="fixed top-0 left-0 w-screen h-screen bg-[#0b0b0b] text-white z-[90] flex flex-col justify-center items-center translate-y-[-100%]">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-        
-        <ul className="flex flex-col gap-6 text-center z-10 w-full max-w-xl">
-          {navItems.map((item, idx) => (
-            <li key={idx} className="overflow-hidden w-full">
-                <button 
-                    onClick={() => handleScroll(item.id)} 
-                    className="menu-link block w-full text-4xl md:text-6xl font-bold uppercase tracking-tighter hover:text-[#28a745] transition-colors"
+        return () => ctx.revert();
+    }, []);
+
+    const toggleMenu = () => {
+        const tl = (menuRef.current as any)?.animation;
+        if (tl) {
+            if (!isOpen) {
+                gsap.set(menuRef.current, { x: "100%", skewX: -10, opacity: 0 });
+                tl.play();
+            } else {
+                tl.reverse();
+            }
+        }
+        setIsOpen(!isOpen);
+    };
+
+    const navigateTo = (path?: string, id?: string) => {
+        toggleMenu();
+
+        setTimeout(() => {
+            if (path) {
+                navigate(path);
+            }
+
+            // Smooth scroll only when ON the home page
+            if (id && location.pathname === "/") {
+                const el = document.getElementById(id);
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            }
+        }, 600);
+    };
+
+    return (
+        <div ref={containerRef}>
+            <nav className="fixed top-0 left-0 w-full z-[100] flex justify-between items-center px-6 md:px-10 py-4 bg-transparent text-white">
+
+                {/* Logo */}
+                <motion.div
+                    onClick={() => navigateTo("/", "home")}
+                    className="cursor-pointer z-[100]"
+                    whileHover={{ scale: 1.05 }}
                 >
-                    {item.name}
-                </button>
-            </li>
-          ))}
-        </ul>
+                    <img src={logo} className="h-20 w-auto" />
+                </motion.div>
 
-        
-      </div>
-    </div>
-  );
+                {/* Hamburger */}
+                <motion.button
+                    onClick={toggleMenu}
+                    className="z-[100] group flex flex-col gap-1.5 cursor-pointer p-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/20"
+                >
+                    <span className="w-8 h-[2px] bg-[#28a745]"></span>
+                    <span className="w-8 h-[2px] bg-[#28a745]"></span>
+                    <span className="w-8 h-[2px] bg-[#28a745]"></span>
+                </motion.button>
+            </nav>
+
+            {/* Full-screen menu */}
+            <div
+                ref={menuRef}
+                className="fixed top-0 right-0 w-screen h-screen bg-[#0b0b0b] text-white z-[90] flex flex-col justify-center items-center opacity-0 translate-x-[100%]"
+            >
+                <ul className="flex flex-col gap-3 w-full max-w-2xl px-10 md:px-20">
+                    {navItems.map((item, idx) => (
+                        <li key={idx} className="overflow-hidden">
+                            <motion.button
+                                onClick={() => navigateTo(item.path, item.id)}
+                                className="menu-link-item block w-full text-4xl md:text-5xl font-bold uppercase tracking-tighter text-left py-3 group relative"
+                            >
+                                <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#28a745] group-hover:w-full transition-all duration-300"></span>
+                                <span className="relative text-white/90 group-hover:text-[#28a745] transition-colors duration-200">
+                                    {item.name}
+                                </span>
+                            </motion.button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
 };
 
 export default Navbar;
-

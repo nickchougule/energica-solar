@@ -9,8 +9,8 @@ const AboutSection = () => {
   const glowRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    let ctx = gsap.context(() => {
-      
+    const ctx = gsap.context(() => {
+
       // 1. Background Glow "Breathing" Animation
       gsap.to(glowRef.current, {
         scale: 1.2,
@@ -47,10 +47,10 @@ const AboutSection = () => {
       }, "-=0.5");
 
       // 4. Cool Line Expansion Animation (The Borders)
-      tl.fromTo(".expand-line", 
-        { width: 0 }, 
+      tl.fromTo(".expand-line",
+        { width: 0 },
         { width: "100%", duration: 1, ease: "expo.out", stagger: 0.2 }
-      , "-=0.5");
+        , "-=0.5");
 
       // 5. Paragraph Fade In
       tl.from(".desc-text", {
@@ -66,57 +66,59 @@ const AboutSection = () => {
   }, []);
 
   return (
-    <div ref={container} className="bg-[#0b0b0b] text-white min-h-[80vh] flex flex-col justify-center px-6 md:px-20 py-20 relative overflow-hidden">
-      
+    <div ref={container} className="bg-[#0b0b0b] text-white min-h-[80vh] flex flex-col items-center justify-center px-6 md:px-20 py-20 relative overflow-hidden">
+
       {/* Decorative Green Glow with Ref for Animation */}
-      <div 
+      <div
         ref={glowRef}
         className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#28a745]/10 rounded-full blur-[120px] pointer-events-none"
       ></div>
 
-      <div className="max-w-6xl z-10 relative">
+      {/* The main content wrapper is now centered using mx-auto and text-center */}
+      <div className="max-w-6xl z-10 relative text-center mx-auto">
         <span className="main-title text-[#28a745] font-bold tracking-widest text-sm uppercase mb-4 block">
           About Us
         </span>
-        
+
         <h2 className="main-title text-4xl md:text-6xl font-bold uppercase leading-tight mb-16 text-white">
-          Driving Success Through <br/>
+          Driving Success Through <br />
           <span className="text-gray-500">Innovation & Integrity.</span>
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          
+        {/* The grid container must NOT be text-center, but the grid items are left-aligned */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-left">
+
           {/* Column 1: Who We Are */}
           <div className="grid-item">
             <div className="w-fit mb-6">
-                <h3 className="text-2xl font-bold uppercase text-white mb-2">
+              <h3 className="text-2xl font-bold uppercase text-white mb-2">
                 Who We Are
-                </h3>
-                {/* Animated Line */}
-                <div className="expand-line h-[2px] bg-[#28a745] w-full"></div>
+              </h3>
+              {/* Animated Line */}
+              <div className="expand-line h-[2px] bg-[#28a745] w-full"></div>
             </div>
-            
+
             <p className="desc-text text-gray-400 leading-relaxed text-lg">
-              [cite_start]At <span className="text-white font-semibold">Energica Sustain Foundation</span> [cite: 52][cite_start], we believe in a client-centric approach[cite: 210]. 
-              <br/><br/>
-              [cite_start]Our team of seasoned experts combines industry knowledge with innovative thinking to deliver solutions that drive success[cite: 211]. [cite_start]We are committed to maintaining the highest standards of professionalism and integrity[cite: 212].
+              At <span className="text-white font-semibold">Energica Sustain Foundation</span>, we believe in a client-centric approach.
+              <br /><br />
+              Our team of seasoned experts combines industry knowledge with innovative thinking to deliver solutions that drive success. We are committed to maintaining the highest standards of professionalism and integrity.
             </p>
           </div>
 
           {/* Column 2: What We Do */}
           <div className="grid-item">
             <div className="w-fit mb-6">
-                <h3 className="text-2xl font-bold uppercase text-white mb-2">
+              <h3 className="text-2xl font-bold uppercase text-white mb-2">
                 What We Do
-                </h3>
-                {/* Animated Line */}
-                <div className="expand-line h-[2px] bg-[#28a745] w-full"></div>
+              </h3>
+              {/* Animated Line */}
+              <div className="expand-line h-[2px] bg-[#28a745] w-full"></div>
             </div>
 
             <p className="desc-text text-gray-400 leading-relaxed text-lg">
-              [cite_start]We assess the technical aspects of projects to ensure they meet investment criteria[cite: 214]. [cite_start]We evaluate feasibility, performance risks, and compliance with standards[cite: 215].
-              <br/><br/>
-              [cite_start]By providing critical insights, we help lenders and clients make informed financing decisions and manage risks effectively throughout the project lifecycle[cite: 215].
+              We assess the technical aspects of projects to ensure they meet investment criteria. We evaluate feasibility, performance risks, and compliance with standards.
+              <br /><br />
+              By providing critical insights, we help lenders and clients make informed financing decisions and manage risks effectively throughout the project lifecycle.
             </p>
           </div>
 
