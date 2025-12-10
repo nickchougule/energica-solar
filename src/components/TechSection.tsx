@@ -79,7 +79,8 @@ const TechSection = () => {
     ];
 
     return (
-        <div ref={container} className="relative bg-[#0b0b0b] text-white py-40 overflow-hidden min-h-[150vh]">
+        // CHANGED: Reduced py-40 to py-20 to reduce top/bottom spacing
+        <div ref={container} className="relative bg-[#0b0b0b] text-white py-20 overflow-hidden min-h-[150vh]">
             
             {/* 1. BACKGROUND HUGE TITLE (Proper Dark White) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -96,7 +97,8 @@ const TechSection = () => {
             </div>
 
             {/* 2. CARDS CONTAINER */}
-            <div ref={cardsContainerRef} className="relative z-10 max-w-7xl mx-auto px-6 md:px-20 flex flex-col gap-32">
+            {/* CHANGED: Reduced gap-32 to gap-20 to reduce space between cards */}
+            <div ref={cardsContainerRef} className="relative z-10 max-w-7xl mx-auto px-6 md:px-20 flex flex-col gap-20">
                 
                 {techData.map((tech) => (
                     <div 

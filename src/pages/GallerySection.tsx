@@ -25,7 +25,9 @@ const GallerySection = () => {
                     pin: true,
                     scrub: 1,
                     snap: 1 / (panels.length - 1),
-                    end: () => "+=" + slider.current!.offsetWidth,
+                    // 👇 CHANGED: Divided by 3 to make scrolling 3x faster
+                    // You can change '3' to '2' if this is too fast
+                    end: () => "+=" + (slider.current!.offsetWidth / 3), 
                 }
             });
         }, component);
@@ -38,7 +40,6 @@ const GallerySection = () => {
             id: 1,
             title: "PM SURYA GHAR",
             subtitle: "Residential Rooftop",
-            // 2. USE IMPORTED IMAGES
             img: PMSURYAGHAR, 
             desc: "Muft Bijli Yojana. Subsidy up to ₹78,000 for residential households. Target: 1 Crore homes."
         },
@@ -46,7 +47,7 @@ const GallerySection = () => {
             id: 2,
             title: "KUSUM SCHEME",
             subtitle: "Solar for Farmers",
-            img: solarRoof, // Using SolarInFarm image
+            img: solarRoof, 
             desc: "Diesel-free irrigation. Up to 90% subsidy for standalone solar pumps. Income from surplus power."
         },
         {
@@ -60,7 +61,7 @@ const GallerySection = () => {
             id: 4,
             title: "OPEN ACCESS",
             subtitle: "Industrial Green Energy",
-            img: antina, // Using Antina image
+            img: antina, 
             desc: "For Industries >100 kW. 100% Renewable sourcing to reduce carbon footprint and energy costs."
         }
     ];

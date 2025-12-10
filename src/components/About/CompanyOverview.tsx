@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // --- IMPORTED IMAGES ---
 import team from "../About/CompanyRoles/Team.avif";
@@ -11,7 +11,7 @@ import inspection from "../About/CompanyRoles/inspection.avif";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ... (Keep revealVariants and MaskedText exactly as they are) ...
+// --- 1. FRAMER MOTION VARIANTS FOR TEXT REVEAL ---
 const revealVariants = {
     hidden: { y: "100%" },
     visible: (i: number) => ({
@@ -48,28 +48,11 @@ const MaskedText = ({ text, className = "", delay = 0 }: { text: string, classNa
 
 const CompanyOverview = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const modalContainer = useRef<HTMLDivElement>(null);
-    const cursorLabel = useRef<HTMLDivElement>(null);
-    const [activeModal, setActiveModal] = useState({ active: false, index: 0 });
+    
+    // Track which index is currently hovered
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-    useEffect(() => {
-        const xMoveContainer = gsap.quickTo(modalContainer.current, "left", { duration: 0.8, ease: "power3" });
-        const yMoveContainer = gsap.quickTo(modalContainer.current, "top", { duration: 0.8, ease: "power3" });
-        const xMoveLabel = gsap.quickTo(cursorLabel.current, "left", { duration: 0.45, ease: "power3" });
-        const yMoveLabel = gsap.quickTo(cursorLabel.current, "top", { duration: 0.45, ease: "power3" });
-
-        const handleMouseMove = (e: MouseEvent) => {
-            const { pageX, pageY } = e;
-            xMoveContainer(pageX);
-            yMoveContainer(pageY);
-            xMoveLabel(pageX);
-            yMoveLabel(pageY);
-        };
-
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
-
+    // --- 2. PARALLAX SCROLL LOGIC ---
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.to(".parallax-col", {
@@ -101,50 +84,27 @@ const CompanyOverview = () => {
         }
     ];
 
+    // GSAP Hover Animation Helper
+    const handleMouseEnter = (index: number) => {
+        setHoveredIndex(index);
+        // Animate Title slightly to the right
+        gsap.to(`.company-title-${index}`, { x: 10, duration: 0.4, ease: "power2.out" });
+    };
+
+    const handleMouseLeave = (index: number) => {
+        setHoveredIndex(null);
+        // Reset Title position
+        gsap.to(`.company-title-${index}`, { x: 0, duration: 0.4, ease: "power2.out" });
+    };
+
     return (
-        // 👇 FIX IS HERE: Changed bg-[#050505] to bg-[#0b0b0b]
-        <section ref={containerRef} className="relative w-full min-h-screen bg-[#0b0b0b] text-white py-32 px-6 overflow-hidden cursor-default">
+        <section ref={containerRef} className="relative w-full min-h-screen bg-[#0b0b0b] text-white pt-10 pb-32 px-6 overflow-hidden cursor-default">
             
-            {/* GLOBAL GRAIN OVERLAY */}
+            {/* Background Noise */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.05] z-0 mix-blend-overlay" style={{ backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/7/76/Noise.png")' }}></div>
 
-            {/* --- FLOATING MODAL --- */}
-            <motion.div 
-                ref={modalContainer} 
-                variants={{
-                    initial: { scale: 0, opacity: 0 },
-                    open: { scale: 1, opacity: 1, transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] } },
-                    closed: { scale: 0, opacity: 0, transition: { duration: 0.4, ease: [0.32, 0, 0.67, 0] } }
-                }}
-                animate={activeModal.active ? "open" : "closed"}
-                className="h-[350px] w-[400px] absolute overflow-hidden pointer-events-none rounded-2xl z-20 top-0 left-0 -translate-x-1/2 -translate-y-1/2 hidden md:block"
-            >
-                <div style={{ top: `${activeModal.index * -100}%` }} className="h-full w-full absolute transition-[top] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]">
-                    {content.map((project, index) => (
-                        <div key={index} className="h-full w-full flex items-center justify-center bg-[#111]">
-                            <img src={project.src} alt={project.title} className="h-full w-full object-cover" />
-                        </div>
-                    ))}
-                </div>
-            </motion.div>
-
-            {/* --- CURSOR LABEL --- */}
-            <motion.div 
-                ref={cursorLabel}
-                variants={{
-                    initial: { scale: 0, opacity: 0 },
-                    open: { scale: 1, opacity: 1, transition: { duration: 0.45, ease: [0.76, 0, 0.24, 1] } },
-                    closed: { scale: 0, opacity: 0, transition: { duration: 0.45, ease: [0.32, 0, 0.67, 0] } }
-                }}
-                animate={activeModal.active ? "open" : "closed"}
-                className="w-20 h-20 rounded-full bg-[#28a745] text-white fixed z-30 flex items-center justify-center pointer-events-none top-0 left-0 -translate-x-1/2 -translate-y-1/2 mix-blend-difference hidden md:flex"
-            >
-                <span className="text-xs font-bold uppercase">View</span>
-            </motion.div>
-
-            {/* --- MAIN CONTENT --- */}
-            <div className="max-w-7xl mx-auto relative z-10">
-                <div className="text-center mb-32">
+            <div className="max-w-7xl mx-auto relative z-20">
+                <div className="text-center mb-20">
                     <motion.span 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -182,20 +142,50 @@ const CompanyOverview = () => {
                     {content.map((item, index) => (
                         <div 
                             key={index} 
-                            className={`group border-t border-gray-800 pt-12 ${index === 1 ? 'parallax-col md:mt-40' : ''}`}
-                            onMouseEnter={() => setActiveModal({ active: true, index })}
-                            onMouseLeave={() => setActiveModal({ active: false, index })}
+                            // Hover handlers
+                            onMouseEnter={() => handleMouseEnter(index)}
+                            onMouseLeave={() => handleMouseLeave(index)}
+                            className={`group border-t border-gray-800 pt-12 ${index === 1 ? 'parallax-col md:mt-40' : ''} relative`}
                         >
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-[#28a745]' : 'bg-white'} transition-transform duration-300 group-hover:scale-150`}></div>
-                                <h3 className="text-3xl md:text-4xl font-bold uppercase text-white group-hover:text-[#28a745] transition-colors duration-300">
-                                    {item.title}
-                                </h3>
+                            {/* --- IMAGE BACKGROUND (Reveals on Hover) --- */}
+                            <AnimatePresence>
+                                {hoveredIndex === index && (
+                                    <motion.div
+                                        // Animation: Scale down slightly and Fade in
+                                        initial={{ opacity: 0, scale: 1.05 }} 
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 1.02 }} // Fade out slightly growing
+                                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} // Elegant ease
+                                        className="absolute -inset-6 z-0 rounded-2xl overflow-hidden pointer-events-none"
+                                    >
+                                        <img 
+                                            src={item.src} 
+                                            alt={item.title} 
+                                            className="w-full h-full object-cover opacity-60" // Reduced opacity so text pops more
+                                        />
+                                        {/* Gradient Overlay for better text readability */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10"></div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            {/* --- TEXT CONTENT (Foreground) --- */}
+                            <div className="relative z-10 pointer-events-none">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-[#28a745]' : 'bg-white'} transition-transform duration-300 group-hover:scale-150`}></div>
+                                    {/* Added class for GSAP targeting */}
+                                    <h3 className={`company-title-${index} text-3xl md:text-4xl font-bold uppercase text-white group-hover:text-[#28a745] transition-colors duration-300 drop-shadow-lg`}>
+                                        {item.title}
+                                    </h3>
+                                </div>
+                                
+                                <div className="drop-shadow-xl">
+                                    <MaskedText 
+                                        text={item.text} 
+                                        className="text-gray-400 text-xl leading-[1.6] group-hover:text-white transition-colors duration-500" 
+                                    />
+                                </div>
                             </div>
-                            <MaskedText 
-                                text={item.text} 
-                                className="text-gray-400 text-xl leading-[1.6] group-hover:text-white transition-colors duration-500" 
-                            />
                         </div>
                     ))}
                 </div>
