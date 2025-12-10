@@ -60,15 +60,15 @@ const Navbar = () => {
         setIsOpen(!isOpen);
     };
 
-    const navigateTo = (path?: string, id?: string) => {
-        toggleMenu();
+    const navigateTo = (path?: string, id?: string, shouldToggle = true) => {
+        if (shouldToggle) {
+            toggleMenu();
+        }
 
         setTimeout(() => {
-            if (path) {
-                navigate(path);
-            }
+            if (path) navigate(path);
 
-            // Smooth scroll only when ON the home page
+            // Only smooth scroll when on the homepage
             if (id && location.pathname === "/") {
                 const el = document.getElementById(id);
                 if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -82,7 +82,7 @@ const Navbar = () => {
 
                 {/* Logo */}
                 <motion.div
-                    onClick={() => navigateTo("/", "home")}
+                    onClick={() => navigateTo("/", "home",false)}
                     className="cursor-pointer z-[100]"
                     whileHover={{ scale: 1.05 }}
                 >
