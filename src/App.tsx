@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import SmoothScroll from './components/SmoothScroll';
@@ -9,26 +9,38 @@ import AboutPage from './pages/AboutPage';
 import Footer from './pages/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+
   return (
-    <Router>
+    <>
       <ScrollToTop/>
       <SmoothScroll>
-        <Preloader />
+        
+        {/* 👇 Preloader reruns EVERY route change */}
+        <Preloader key={location.pathname} />
+
         <CustomCursor />
         <div className="noise-overlay"></div>
         <Navbar />
+
         <Routes>
-          {/* Default Route: Home Page (Single Page Layout) */}
           <Route path="/" element={<Home />} />
-          
-          {/* NEW ROUTE: About Page (Renders the comprehensive AboutSection component) */}
-          <Route path="/about" element={<AboutPage/>} />
+          <Route path="/about" element={<AboutPage />} />
         </Routes>
+
         <Footer/>
       </SmoothScroll>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
-}
+};
 
 export default App;
