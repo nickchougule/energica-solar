@@ -4,10 +4,18 @@ body {
   overflow-x: hidden;
   /* DEEP BLACK BACKGROUND */
   background-color: #0b0b0b;
-  color: #ffffff; /* White Text */
+  color: #ffffff;
+  /* White Text */
   margin: 0;
   padding: 0;
+
+
 }
+body.loaded {
+  visibility: visible;
+}
+
+
 
 @layer components {
   .image-wrapper {
@@ -36,7 +44,7 @@ body {
   /* White Outline Stroke */
   .text-stroke {
     -webkit-text-fill-color: transparent;
-    -webkit-text-stroke-color: #ffffff; 
+    -webkit-text-stroke-color: #ffffff;
     -webkit-text-stroke-width: 1px;
   }
 
@@ -61,14 +69,30 @@ body {
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: #0b0b0b;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #333;
     border-radius: 4px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
-    background: #28a745; /* Green hover */
+    background: #28a745;
+    /* Green hover */
   }
+
+  .reveal-line {
+    overflow: hidden;
+    display: block;
+  }
+
+  .mission-vision-section {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  
+
 }

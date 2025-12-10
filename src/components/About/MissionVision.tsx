@@ -1,117 +1,236 @@
 // src/components/about/MissionVision.tsx
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, useInView, useSpring, useMotionValue, useTransform, animate } from 'framer-motion';
+
+// --- 1. UTILITY COMPONENTS ---
+
+// A. Animated Counter (Counts up from 0 to value)
+const Counter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
+    const ref = useRef<HTMLSpanElement>(null);
+    const inView = useInView(ref, { once: true, margin: "-100px" });
+    
+    useEffect(() => {
+        if (inView && ref.current) {
+            const controls = animate(0, value, {
+                duration: 2,
+                ease: [0.25, 1, 0.5, 1], // Luxury easing
+                onUpdate: (latest) => {
+                    if (ref.current) {
+                        ref.current.textContent = Math.floor(latest).toString() + suffix;
+                    }
+                }
+            });
+            return () => controls.stop();
+        }
+    }, [inView, value, suffix]);
+
+    return <span ref={ref} className="tabular-nums">0{suffix}</span>;
+};
+
+// B. Masked Text Reveal (Word by word slide-up)
+const MaskedText = ({ text, className = "", delay = 0 }: { text: string, className?: string, delay?: number }) => {
+    const words = text.split(" ");
+    return (
+        <div className={`${className} overflow-hidden flex flex-wrap gap-x-2 gap-y-1`}>
+            {words.map((word, i) => (
+                <div key={i} className="overflow-hidden relative inline-block">
+                    <motion.span
+                        initial={{ y: "100%" }}
+                        whileInView={{ y: "0%" }}
+                        viewport={{ once: true, margin: "-10%" }}
+                        transition={{ 
+                            duration: 0.8, 
+                            ease: [0.25, 1, 0.5, 1], 
+                            delay: delay + (0.03 * i) 
+                        }}
+                        className="inline-block"
+                    >
+                        {word}
+                    </motion.span>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+// C. Spotlight Card (The "Crazy" Glow Effect)
+const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
+    const divRef = useRef<HTMLDivElement>(null);
+    const [isFocused, setIsFocused] = useState(false);
+    const position = { x: useMotionValue(0), y: useMotionValue(0) };
+    const opacity = useMotionValue(0);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+        position.x.set(e.clientX - rect.left);
+        position.y.set(e.clientY - rect.top);
+    };
+
+    const handleFocus = () => {
+        setIsFocused(true);
+        animate(opacity, 1, { duration: 0.2 });
+    };
+
+    const handleBlur = () => {
+        setIsFocused(false);
+        animate(opacity, 0, { duration: 0.2 });
+    };
+
+    return (
+        <div
+            ref={divRef}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleFocus}
+            onMouseLeave={handleBlur}
+            className={`relative overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0a] ${className}`}
+        >
+            {/* The Spotlight Gradient moving with mouse */}
+            <motion.div
+                className="pointer-events-none absolute -inset-px transition duration-300"
+                style={{
+                    opacity,
+                    background: useTransform(
+                        [position.x, position.y],
+                        ([x, y]) => `radial-gradient(600px circle at ${x}px ${y}px, rgba(40, 167, 69, 0.15), transparent 40%)`
+                    ),
+                }}
+            />
+            {/* The Border Spotlight */}
+            <motion.div
+                className="pointer-events-none absolute inset-0 z-10 rounded-3xl transition duration-300"
+                style={{
+                    opacity,
+                    background: useTransform(
+                        [position.x, position.y],
+                        ([x, y]) => `radial-gradient(400px circle at ${x}px ${y}px, rgba(40, 167, 69, 0.4), transparent 40%)`
+                    ),
+                }}
+                // Mask composite to only show border
+                // Note: 'maskComposite' might need vendor prefix in some browsers, but works in modern ones
+                css={{
+                    "-webkit-mask": "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    maskComposite: "exclude",
+                } as any}
+            />
+            
+            {/* Content Layer */}
+            <div className="relative z-20 h-full">{children}</div>
+        </div>
+    );
+};
+
 
 const MissionVision: React.FC = () => {
     return (
-        <section className="w-full min-h-screen bg-[#0a0a0a] py-20 px-6">
-            <div className="max-w-7xl mx-auto">
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <span className="inline-block px-4 py-2 bg-[#28a745]/10 border border-[#28a745]/30 rounded-full text-[#28a745] text-sm font-mono uppercase tracking-wider mb-4">
+        <section className="w-full bg-[#050505] py-32 px-6 min-h-screen relative overflow-hidden">
+            
+            {/* GLOBAL NOISE OVERLAY */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0 mix-blend-overlay" style={{ backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/7/76/Noise.png")' }}></div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
+                {/* HEADER */}
+                <div className="text-center mb-32">
+                    <motion.span
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-block px-4 py-2 bg-[#28a745]/10 border border-[#28a745]/30 rounded-full text-[#28a745] text-sm font-mono uppercase tracking-wider mb-6"
+                    >
                         Our Foundation
-                    </span>
-                    <h2 className="text-5xl md:text-6xl font-black text-white">
-                        Mission & Vision
+                    </motion.span>
+                    <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">
+                        <MaskedText text="Mission & Vision" />
                     </h2>
                 </div>
 
-                {/* Two Column Layout */}
-                <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-                    {/* MISSION */}
-                    <div className="group relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#28a745]/20 to-transparent rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                        <div className="relative bg-gradient-to-br from-[#1a1a1a] to-[#111] border-2 border-[#28a745]/30 rounded-3xl p-8 md:p-10 h-full transform group-hover:scale-[1.02] transition-all duration-300">
-                            {/* Icon */}
-                            <div className="w-16 h-16 bg-[#28a745]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#28a745]/20 transition-colors">
-                                <svg className="w-8 h-8 text-[#28a745]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                            </div>
+                {/* --- MISSION CARD --- */}
+                <SpotlightCard className="mb-12 p-8 md:p-16 group">
+                    <div className="grid md:grid-cols-12 gap-12 items-start">
+                        <div className="md:col-span-4">
+                            <span className="text-[#28a745] font-mono text-xl uppercase tracking-widest block mb-4">01. Purpose</span>
+                            <h3 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
+                                MISSION
+                            </h3>
+                        </div>
+                        <div className="md:col-span-8">
+                            <MaskedText 
+                                text="To bridge the critical gap between technical feasibility and financial viability in renewable energy projects. We drive sustainable infrastructure development across India, aligning with government schemes like PM Surya Ghar and KUSUM Yojana to ensure energy security for all." 
+                                className="text-gray-300 text-xl md:text-3xl leading-relaxed font-light"
+                                delay={0.2}
+                            />
+                            
+                            {/* Decorative Line */}
+                            <motion.div 
+                                initial={{ scaleX: 0 }}
+                                whileInView={{ scaleX: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 1.5, delay: 0.5, ease: "circOut" }}
+                                className="h-px w-full bg-gradient-to-r from-[#28a745] to-transparent mt-12 origin-left"
+                            />
+                        </div>
+                    </div>
+                </SpotlightCard>
 
-                            {/* Title */}
-                            <div className="mb-6">
-                                <span className="text-[#28a745] font-mono text-xs uppercase tracking-widest">Our Purpose</span>
-                                <h3 className="text-4xl md:text-5xl font-black text-white mt-2">Mission</h3>
-                            </div>
-
-                            {/* Content */}
-                            <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                                To bridge the critical gap between technical feasibility and financial
-                                viability in renewable energy projects, driving sustainable infrastructure
-                                development across India, aligning with government schemes like PM Surya Ghar
-                                and KUSUM Yojana to ensure energy security for all.
-                            </p>
-
-                            {/* Features */}
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-[#28a745] rounded-full"></div>
-                                    <span className="text-gray-400 text-sm">Technical Feasibility</span>
+                {/* --- VISION CARD --- */}
+                <SpotlightCard className="p-8 md:p-16 group">
+                    <div className="grid md:grid-cols-12 gap-12 items-start">
+                        <div className="md:col-span-4 md:order-2">
+                             <span className="text-[#28a745] font-mono text-xl uppercase tracking-widest block mb-4">02. Future</span>
+                             <h3 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
+                                VISION
+                            </h3>
+                        </div>
+                        <div className="md:col-span-8 md:order-1">
+                            <MaskedText 
+                                text="To be the most trusted technical and financial advisory in the renewable sector, recognized for our commitment to integrity and innovation, accelerating India's transition to 100% sustainable energy independence." 
+                                className="text-gray-300 text-xl md:text-3xl leading-relaxed font-light"
+                                delay={0.2}
+                            />
+                            
+                            {/* STATS GRID */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 border-t border-white/10 pt-10">
+                                <div>
+                                    <div className="text-5xl font-black text-white mb-2 flex">
+                                        <Counter value={100} suffix="%" />
+                                    </div>
+                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Sustainable</p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-[#28a745] rounded-full"></div>
-                                    <span className="text-gray-400 text-sm">Financial Viability</span>
+                                <div>
+                                    <div className="text-5xl font-black text-white mb-2 flex">
+                                        <span className="mr-1">#</span><Counter value={1} />
+                                    </div>
+                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Trusted Partner</p>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-[#28a745] rounded-full"></div>
-                                    <span className="text-gray-400 text-sm">Government Alignment</span>
+                                <div>
+                                    <div className="text-5xl font-black text-white mb-2">∞</div>
+                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Innovation</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </SpotlightCard>
 
-                    {/* VISION */}
-                    <div className="group relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#28a745]/20 to-transparent rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-                        <div className="relative bg-gradient-to-br from-[#1a1a1a] to-[#111] border-2 border-[#28a745]/30 rounded-3xl p-8 md:p-10 h-full transform group-hover:scale-[1.02] transition-all duration-300">
-                            {/* Icon */}
-                            <div className="w-16 h-16 bg-[#28a745]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#28a745]/20 transition-colors">
-                                <svg className="w-8 h-8 text-[#28a745]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </div>
-
-                            {/* Title */}
-                            <div className="mb-6">
-                                <span className="text-[#28a745] font-mono text-xs uppercase tracking-widest">Our Future</span>
-                                <h3 className="text-4xl md:text-5xl font-black text-white mt-2">Vision</h3>
-                            </div>
-
-                            {/* Content */}
-                            <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                                To be the most trusted technical and financial advisory in the renewable
-                                sector, recognized for our commitment to integrity and innovation,
-                                accelerating India's transition to 100% sustainable energy independence.
-                            </p>
-
-                            {/* Stats */}
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="text-center p-4 bg-[#28a745]/5 rounded-xl border border-[#28a745]/20">
-                                    <div className="text-3xl font-black text-[#28a745] mb-1">100%</div>
-                                    <div className="text-xs text-gray-400 uppercase">Sustainable</div>
-                                </div>
-                                <div className="text-center p-4 bg-[#28a745]/5 rounded-xl border border-[#28a745]/20">
-                                    <div className="text-3xl font-black text-[#28a745] mb-1">#1</div>
-                                    <div className="text-xs text-gray-400 uppercase">Trusted</div>
-                                </div>
-                                <div className="text-center p-4 bg-[#28a745]/5 rounded-xl border border-[#28a745]/20">
-                                    <div className="text-3xl font-black text-[#28a745] mb-1">∞</div>
-                                    <div className="text-xs text-gray-400 uppercase">Innovation</div>
-                                </div>
-                            </div>
-                        </div>
+                {/* BOTTOM ACCENT */}
+                <div className="mt-32 text-center opacity-50">
+                    <div className="inline-flex items-center gap-4 text-gray-500 text-sm">
+                         <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: 60 }}
+                            transition={{ duration: 1 }}
+                            className="h-px bg-[#28a745]"
+                        />
+                        <span className="font-mono uppercase tracking-widest">Building India's Green Future</span>
+                        <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: 60 }}
+                            transition={{ duration: 1 }}
+                            className="h-px bg-[#28a745]"
+                        />
                     </div>
                 </div>
 
-                {/* Bottom Accent */}
-                <div className="mt-16 text-center">
-                    <div className="inline-flex items-center gap-2 text-gray-500 text-sm">
-                        <div className="w-12 h-px bg-gradient-to-r from-transparent to-[#28a745]/50"></div>
-                        <span className="font-mono">Building India's Green Future</span>
-                        <div className="w-12 h-px bg-gradient-to-l from-transparent to-[#28a745]/50"></div>
-                    </div>
-                </div>
             </div>
         </section>
     );

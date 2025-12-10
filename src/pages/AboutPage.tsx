@@ -1,6 +1,9 @@
+// src/pages/AboutPage.tsx
+
 import React, { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/all';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 import CompanyOverview from '../components/About/CompanyOverview';
 import MissionVision from '../components/About/MissionVision';
 import LeadershipTeam from '../components/About/LeadershipTeam';
@@ -9,8 +12,6 @@ import OngoingProjectsMap from '../components/About/OngoingProjectsMap';
 import InfrastructureSection from '../components/About/InfrastructureSection';
 import CSRSection from '../components/About/CSRSection';
 
-// Component Imports (to be created below)
-
 gsap.registerPlugin(ScrollTrigger);
 
 const AboutPage = () => {
@@ -18,21 +19,23 @@ const AboutPage = () => {
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            // Page Transition Animation: Fade and Slide Up on Load
+            // RESTORED YOUR ORIGINAL ANIMATION
+            // This ensures content is visible immediately if JS lags, avoiding the blank screen
             gsap.from(containerRef.current, {
                 opacity: 0,
                 y: 50,
                 duration: 1.5,
-                ease: "power4.out"
+                ease: "power4.out",
+                // Added this to fix layout shifts on child components
+                onComplete: () => ScrollTrigger.refresh() 
             });
         }, containerRef);
         return () => ctx.revert();
     }, []);
 
     return (
+        // No 'invisible' class here - ensures content is rendered
         <div ref={containerRef} className="bg-[#0b0b0b] text-white min-h-screen pt-20">
-            
-            {/* --- CORE CONTENT SECTIONS --- */}
             
             <section id="company-overview">
                 <CompanyOverview/>

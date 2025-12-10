@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // Added useEffect/useState if needed, but not strictly required for this logic
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -12,13 +12,16 @@ import ScrollToTop from './components/ScrollToTop';
 const AppContent = () => {
   const location = useLocation();
 
+  // Logic: Check if we are strictly on the Home page
+  const isHome = location.pathname === "/";
+
   return (
     <>
       <ScrollToTop/>
       <SmoothScroll>
         
-        {/* 👇 Preloader reruns EVERY route change */}
-        <Preloader key={location.pathname} />
+        {/* 👇 FIX: Only render Preloader if we are on the Home path */}
+        {isHome && <Preloader />}
 
         <CustomCursor />
         <div className="noise-overlay"></div>
