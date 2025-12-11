@@ -1,13 +1,14 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import win50fps from "../assets/win50fps.mp4"; // Ensure this file exists!
-// 1. IMPORT LOGO
+import win50fps from "../assets/win50fps.mp4"; 
 import logo from "../assets/Energica.png";
 
-const Preloader = () => {
-  const container = useRef<HTMLDivElement>(null);
+// 1. Accept the onComplete prop
+const Preloader = ({ onComplete }) => {
+  const container = useRef(null);
 
   useLayoutEffect(() => {
+    // Remove the static HTML preloader if it exists
     const htmlLoader = document.getElementById("preloader-init");
     if (htmlLoader) htmlLoader.remove();
 
@@ -18,8 +19,10 @@ const Preloader = () => {
         yPercent: -100,
         duration: 1.5,
         ease: "power4.inOut",
-        delay: 3.5, onComplete: () => {
-          window.dispatchEvent(new Event("preloaderFinished"));
+        delay: 3.5,
+        // 2. Call the parent function when animation is completely done
+        onComplete: () => {
+          if (onComplete) onComplete();
         }
       });
 
@@ -41,7 +44,7 @@ const Preloader = () => {
     }, container);
 
     return () => ctx.revert();
-  }, []);
+  }, [onComplete]); // Add onComplete to dependency array
 
   return (
     <div
@@ -70,12 +73,9 @@ const Preloader = () => {
 
       {/* CENTER CONTENT */}
       <div className="relative z-10 flex flex-col justify-center items-center h-full px-4">
-
-        {/* 4. LOGO PLACEMENT - INCREASED SIZE */}
         <img
           src={logo}
           alt="Energica Logo"
-          // Changed from w-24 to w-40 (mobile) and w-60 (desktop)
           className="w-40 md:w-60 h-auto mb-8 logo-reveal drop-shadow-2xl"
         />
       </div>

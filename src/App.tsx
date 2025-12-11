@@ -6,25 +6,44 @@ import SmoothScroll from './components/SmoothScroll';
 import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
 import AboutPage from './pages/AboutPage';
-// 1. Import Contact Page
 import ContactPage from './pages/ContactPage'; 
 import Footer from './pages/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
 const AppContent = () => {
   const location = useLocation();
-
-  // Logic: Check if we are strictly on the Home page
   const isHome = location.pathname === "/";
+
+  // 1. Initialize loading state based on the path.
+  // Home -> true (show preloader), Others -> false (show content immediately)
+  const [loading, setLoading] = useState(isHome);
+
+  useEffect(() => {
+    // 2. CRITICAL FIX: MANUALLY REMOVE STATIC HTML PRELOADER ON OTHER PAGES
+    // Since the <Preloader /> component is skipped on non-home pages, 
+    // it never runs the code to remove the white 'preloader-init' div.
+    // We must do it here manually.
+    if (!isHome) {
+      const htmlLoader = document.getElementById("preloader-init");
+      if (htmlLoader) {
+        htmlLoader.remove();
+      }
+      
+      // Safety: Ensure loading state is strictly false
+      setLoading(false);
+    }
+  }, [isHome]);
 
   return (
     <>
       <ScrollToTop/>
-      <SmoothScroll>
-        
-        {/* Only render Preloader if we are on the Home path */}
-        {isHome && <Preloader />}
+      
+      {/* 3. Preloader only shows if it's Home AND loading is true */}
+      {isHome && loading && (
+        <Preloader onComplete={() => setLoading(false)} />
+      )}
 
+      <SmoothScroll>
         <CustomCursor />
         <div className="noise-overlay"></div>
         <Navbar />
@@ -32,7 +51,6 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />
-          {/* 2. Add Contact Route */}
           <Route path="/contact" element={<ContactPage />} />
         </Routes>
 
