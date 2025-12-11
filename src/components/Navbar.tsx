@@ -9,7 +9,8 @@ const navItems = [
     { name: "Awareness Campaigns", id: "schemes" },
     { name: "Training Campaigns", id: "training" },
     { name: "Consultation", id: "consultation" },
-    { name: "Contact Us", id: "contact" }
+    // 👇 UPDATED: Changed path to "/contact"
+    { name: "Contact Us", id: "contact", path: "/contact" } 
 ];
 
 const Navbar = () => {
@@ -69,9 +70,12 @@ const Navbar = () => {
             if (path) navigate(path);
 
             // Only smooth scroll when on the homepage
-            if (id && location.pathname === "/") {
+            if (id && location.pathname === "/" && path === "/") {
                 const el = document.getElementById(id);
                 if (el) el.scrollIntoView({ behavior: "smooth" });
+            } else {
+                // For other pages (like Contact), scroll to top
+                window.scrollTo(0, 0);
             }
         }, 600);
     };
@@ -105,13 +109,12 @@ const Navbar = () => {
                 ref={menuRef}
                 className="fixed top-0 right-0 w-screen h-screen bg-[#0b0b0b] text-white z-[90] flex flex-col justify-center items-center opacity-0 translate-x-[100%]"
             >
-                <ul className="flex flex-col gap-4 w-full max-w-2xl px-10 md:px-20"> {/* Increased gap slightly for cleaner look */}
+                <ul className="flex flex-col gap-3 w-full max-w-2xl px-10 md:px-20">
                     {navItems.map((item, idx) => (
                         <li key={idx} className="overflow-hidden">
                             <motion.button
                                 onClick={() => navigateTo(item.path, item.id)}
-                                // CHANGED: Reduced font size from text-4xl/5xl to text-2xl/4xl
-                                className="menu-link-item block w-full text-2xl md:text-4xl font-bold uppercase tracking-tighter text-left py-2 group relative"
+                                className="menu-link-item block w-full text-4xl md:text-5xl font-bold uppercase tracking-tighter text-left py-3 group relative"
                             >
                                 <span className="absolute left-0 bottom-0 h-[2px] w-0 bg-[#28a745] group-hover:w-full transition-all duration-300"></span>
                                 <span className="relative text-white/90 group-hover:text-[#28a745] transition-colors duration-200">
