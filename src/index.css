@@ -8,24 +8,37 @@ body {
   /* White Text */
   margin: 0;
   padding: 0;
-
-
 }
+
 body.loaded {
   visibility: visible;
 }
 
-
-
 @layer components {
+  /* --- FIX START: RESPONSIVE IMAGE WRAPPER --- */
   .image-wrapper {
-    width: 600px;
-    height: 600px;
+    /* 1. Mobile Default: Responsive Size */
+    width: 90vw;        /* Takes 90% of screen width */
+    height: 90vw;       /* Keeps it a square/circle shape */
+    max-width: 350px;   /* Cap it so it doesn't get too huge on big phones */
+    max-height: 350px;  
+    
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
   }
+
+  /* 2. Desktop Override (Screens larger than 768px) */
+  @media (min-width: 768px) {
+    .image-wrapper {
+      width: 600px;     /* Back to your original large size */
+      height: 600px;
+      max-width: none;
+      max-height: none;
+    }
+  }
+  /* --- FIX END --- */
 
   .masked-image {
     width: 100%;
@@ -93,6 +106,4 @@ body.loaded {
     opacity: 0;
     transform: translateY(50px);
   }
-  
-
 }
