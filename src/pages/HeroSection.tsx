@@ -82,9 +82,14 @@ const HeroSection = () => {
                             {/* Main Title: ENER (Hollow) + GICA (Solid) */}
                             <h1 
                                 ref={text1} 
-                                className="text-[10vw] md:text-[120px] font-black leading-none drop-shadow-2xl tracking-tighter flex gap-2 md:gap-4"
+                                // UPDATED CLASSES HERE:
+                                // 1. items-center justify-center: Centers alignment
+                                // 2. whitespace-nowrap: Prevents line breaks
+                                // 3. text-[12vw]: Fills circle better
+                                // 4. gap-1: Tighter spacing on mobile
+                                className="text-[12vw] md:text-[120px] font-black leading-none drop-shadow-2xl tracking-tighter flex items-center justify-center gap-1 md:gap-4 whitespace-nowrap"
                             >
-                                <span className="text-transparent" style={{ WebkitTextStroke: "2px white" }}>
+                                <span className="text-transparent" style={{ WebkitTextStroke: "1px white" }}>
                                     ENER
                                 </span>
                                 <span className="text-white">
@@ -92,12 +97,9 @@ const HeroSection = () => {
                                 </span>
                             </h1>
 
-                            {/* Subtitle: SUSTAIN FOUNDATION (Clean White Text) */}
+                            {/* Subtitle: SUSTAIN FOUNDATION */}
                             <h2 
                                 ref={text2} 
-                                // Reduced size: text-[2vw] / 18px
-                                // Removed background pill
-                                // Added drop-shadow
                                 className="mt-4 md:mt-6 text-[2.5vw] md:text-[20px] font-bold tracking-[0.3em] text-white drop-shadow-md"
                             >
                                 SUSTAIN FOUNDATION
