@@ -44,6 +44,7 @@ const AppContent = () => {
       )}
 
       <SmoothScroll>
+        <CustomCursor />
         <div className="noise-overlay"></div>
         <Navbar />
 
