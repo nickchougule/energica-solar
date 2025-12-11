@@ -13,7 +13,6 @@ const pillars = [
         id: "01",
         title: "Manufacturing", 
         subtitle: "Supply Chain Zero",
-        // EXPANDED CONTENT
         desc: "Strategic partnerships for high-quality PV module and inverter production. We utilize automated assembly lines to ensure zero-defect supply chains. Our facilities integrate AI-driven quality checks at every stage, minimizing failure rates and maximizing long-term energy yield for every installed unit.",
         gradient: "linear-gradient(135deg, #0f380f 0%, #000000 100%)", 
         accent: "#28a745"
@@ -22,7 +21,6 @@ const pillars = [
         id: "02",
         title: "Distribution", 
         subtitle: "Global Logistics",
-        // EXPANDED CONTENT
         desc: "Optimized logistics and warehousing across key regional hubs. Our AI-driven fleet management ensures just-in-time delivery to remote project sites. We maintain a robust inventory of critical spares to reduce downtime, ensuring that energy flows uninterrupted across our entire grid network.",
         gradient: "linear-gradient(135deg, #064e3b 0%, #000000 100%)",
         accent: "#34d399"
@@ -31,7 +29,6 @@ const pillars = [
         id: "03",
         title: "Training Cmd", 
         subtitle: "Safety & Certification",
-        // EXPANDED CONTENT
         desc: "State-of-the-art facilities providing technical and safety training. We simulate high-voltage scenarios to certify the next generation of project managers. Our curriculum covers everything from basic installation protocols to advanced grid synchronization techniques, setting the industry standard.",
         gradient: "linear-gradient(135deg, #115e59 0%, #000000 100%)",
         accent: "#2dd4bf"
@@ -75,20 +72,25 @@ const InfrastructureSection = () => {
         return () => ctx.revert();
     }, []);
 
+    // NEW: Handle Mobile Click
+    const handleInteraction = (index: number) => {
+        setActiveIndex(index);
+    };
+
     return (
-        <section ref={containerRef} className="bg-[#050505] text-white py-20 px-4 md:px-12 relative min-h-screen overflow-hidden">
+        <section ref={containerRef} className="bg-[#050505] text-white py-16 md:py-20 px-4 md:px-12 relative min-h-screen overflow-hidden">
             
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
             <div className="max-w-6xl mx-auto relative z-10">
                 
                 {/* HEADER */}
-                {/* Reduced margin-bottom to pull cards closer to title */}
                 <div className="mb-10">
-                    <span className="infra-title-anim inline-block text-[#28a745] font-mono tracking-widest text-sm uppercase font-bold mb-3 border-b border-[#28a745] pb-1">
+                    <span className="infra-title-anim inline-block text-[#28a745] font-mono tracking-widest text-xs md:text-sm uppercase font-bold mb-3 border-b border-[#28a745] pb-1">
                         Infrastructure Matrix
                     </span>
-                    <h2 className="infra-title-anim text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter">
+                    {/* Responsive Text Size */}
+                    <h2 className="infra-title-anim text-[10vw] md:text-7xl font-black uppercase leading-[0.9] tracking-tighter">
                         The Backbone <br />
                         <span className="text-gray-700">Of Energica.</span>
                     </h2>
@@ -99,16 +101,24 @@ const InfrastructureSection = () => {
                     {pillars.map((item, index) => {
                         const isActive = activeIndex === index;
                         
+                        // Responsive Heights
+                        // Mobile: 450px expanded (to fit text), 80px collapsed
+                        // Desktop: 380px expanded, 90px collapsed
+                        const expandedHeight = window.innerWidth < 768 ? 550 : 380;
+                        const collapsedHeight = window.innerWidth < 768 ? 80 : 90;
+
                         return (
                             <motion.div
                                 key={item.id}
                                 ref={(el) => {
                                     if (el) deckItemsRef.current[index] = el;
                                 }}
-                                onMouseEnter={() => setActiveIndex(index)}
+                                // Desktop Hover
+                                onMouseEnter={() => handleInteraction(index)}
+                                // Mobile Tap
+                                onClick={() => handleInteraction(index)}
                                 animate={{ 
-                                    // RESTORED HEIGHT: Increased to 380px to fit new content comfortably without empty space
-                                    height: isActive ? 380 : 90, 
+                                    height: isActive ? expandedHeight : collapsedHeight, 
                                     backgroundColor: isActive ? "rgba(20, 20, 20, 1)" : "rgba(10, 10, 10, 0.5)"
                                 }}
                                 transition={{ type: "spring", stiffness: 120, damping: 20 }}
@@ -122,19 +132,19 @@ const InfrastructureSection = () => {
                                     
                                     {/* TOP ROW: ID and Title */}
                                     <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center gap-6">
-                                            <span className={`text-xl font-mono tracking-widest transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-600'}`}>
+                                        <div className="flex items-center gap-4 md:gap-6">
+                                            <span className={`text-lg md:text-xl font-mono tracking-widest transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-600'}`}>
                                                 /{item.id}
                                             </span>
-                                            {/* RESTORED FONT SIZE */}
-                                            <h3 className={`text-3xl md:text-5xl font-black uppercase transition-all duration-300 ${isActive ? 'translate-x-4 text-white' : 'text-gray-500'}`}>
+                                            {/* Responsive Title Size */}
+                                            <h3 className={`text-2xl sm:text-3xl md:text-5xl font-black uppercase transition-all duration-300 ${isActive ? 'translate-x-2 md:translate-x-4 text-white' : 'text-gray-500'}`}>
                                                 {item.title}
                                             </h3>
                                         </div>
                                         
                                         <motion.div 
                                             animate={{ rotate: isActive ? 90 : 0 }}
-                                            className={`text-2xl ${isActive ? 'text-white' : 'text-gray-700'}`}
+                                            className={`text-xl md:text-2xl ${isActive ? 'text-white' : 'text-gray-700'}`}
                                         >
                                             ➔
                                         </motion.div>
@@ -148,19 +158,19 @@ const InfrastructureSection = () => {
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
                                                 transition={{ delay: 0.2, duration: 0.5 }}
-                                                className="flex flex-col md:flex-row md:items-end justify-between gap-8 mt-auto"
+                                                className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8 mt-auto"
                                             >
                                                 <div className="max-w-2xl">
-                                                    <div className="text-sm font-mono text-white/60 mb-3 uppercase tracking-wider">
+                                                    <div className="text-xs md:text-sm font-mono text-white/60 mb-2 md:mb-3 uppercase tracking-wider">
                                                         {item.subtitle}
                                                     </div>
-                                                    {/* RESTORED FONT SIZE & SPACING */}
-                                                    <p className="text-lg md:text-xl text-white font-light leading-relaxed">
+                                                    {/* Responsive Desc Font Size */}
+                                                    <p className="text-base md:text-xl text-white font-light leading-relaxed">
                                                         {item.desc}
                                                     </p>
                                                 </div>
 
-                                                {/* Decorative Technical UI */}
+                                                {/* Decorative Technical UI (Hidden on Mobile to save space) */}
                                                 <div className="hidden md:block text-right">
                                                     <div className="flex flex-col items-end gap-1">
                                                         <div className="w-24 h-1 bg-white/20 overflow-hidden rounded-full">

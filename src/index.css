@@ -2,10 +2,8 @@
 
 body {
   overflow-x: hidden;
-  /* DEEP BLACK BACKGROUND */
   background-color: #0b0b0b;
   color: #ffffff;
-  /* White Text */
   margin: 0;
   padding: 0;
 }
@@ -15,13 +13,23 @@ body.loaded {
 }
 
 @layer components {
-  /* --- FIX START: RESPONSIVE IMAGE WRAPPER --- */
+  /* --- RESPONSIVE IMAGE WRAPPER (Market Standard Sizing) --- */
   .image-wrapper {
-    /* 1. Mobile Default: Responsive Size */
-    width: 90vw;        /* Takes 90% of screen width */
-    height: 90vw;       /* Keeps it a square/circle shape */
-    max-width: 350px;   /* Cap it so it doesn't get too huge on big phones */
-    max-height: 350px;  
+    /* MOBILE STRATEGY (320px - 450px screens):
+      We use 85vw to ensure it fits safely within the bezels of standard phones 
+      (iPhone 12/13/14, Samsung S21/S22/S23).
+    */
+    width: 85vw;
+    height: 85vw;
+    
+    /* Constraints:
+      Min: 280px (Prevents breaking on Galaxy Fold outer screen)
+      Max: 400px (Prevents becoming massive on Tablets/iPad Mini)
+    */
+    min-width: 280px;
+    min-height: 280px;
+    max-width: 400px;
+    max-height: 400px;
     
     display: flex;
     align-items: center;
@@ -29,13 +37,21 @@ body.loaded {
     position: relative;
   }
 
-  /* 2. Desktop Override (Screens larger than 768px) */
+  /* DESKTOP/LAPTOP OVERRIDE (Standard 1366x768 and up) */
   @media (min-width: 768px) {
     .image-wrapper {
-      width: 600px;     /* Back to your original large size */
-      height: 600px;
+      width: 550px; /* Slightly tighter than 600px for better laptop view */
+      height: 550px;
       max-width: none;
       max-height: none;
+    }
+  }
+  
+  /* LARGE DESKTOP OVERRIDE (1920x1080 and up) */
+  @media (min-width: 1536px) {
+    .image-wrapper {
+      width: 700px;
+      height: 700px;
     }
   }
   /* --- FIX END --- */
@@ -54,18 +70,11 @@ body.loaded {
     mask-repeat: no-repeat;
   }
 
-  /* White Outline Stroke */
-  .text-stroke {
-    -webkit-text-fill-color: transparent;
-    -webkit-text-stroke-color: #ffffff;
-    -webkit-text-stroke-width: 1px;
-  }
-
   .perspective {
     perspective: 2200px;
   }
 
-  /* Film Grain for that Premium Dark Look */
+  /* Film Grain */
   .noise-overlay {
     position: fixed;
     top: 0;
@@ -78,7 +87,6 @@ body.loaded {
     background: url("https://grainy-gradients.vercel.app/noise.svg");
   }
 
-  /* Dark Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -90,20 +98,5 @@ body.loaded {
   ::-webkit-scrollbar-thumb {
     background: #333;
     border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #28a745;
-    /* Green hover */
-  }
-
-  .reveal-line {
-    overflow: hidden;
-    display: block;
-  }
-
-  .mission-vision-section {
-    opacity: 0;
-    transform: translateY(50px);
   }
 }

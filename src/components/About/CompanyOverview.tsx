@@ -1,6 +1,6 @@
 // src/components/about/CompanyOverview.tsx
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,22 +49,28 @@ const MaskedText = ({ text, className = "", delay = 0 }: { text: string, classNa
 const CompanyOverview = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     
-    // Track which index is currently hovered
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    // Track which index is currently active (Hovered on Desktop, Tapped on Mobile)
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-    // --- 2. PARALLAX SCROLL LOGIC ---
-    useEffect(() => {
+    // --- 2. RESPONSIVE PARALLAX SCROLL LOGIC ---
+    useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.to(".parallax-col", {
-                yPercent: 20,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: containerRef.current,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true
-                }
+            let mm = gsap.matchMedia();
+
+            // DESKTOP ONLY: Apply parallax (Shift the second column down)
+            mm.add("(min-width: 768px)", () => {
+                gsap.to(".parallax-col", {
+                    yPercent: 20,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: containerRef.current,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: true
+                    }
+                });
             });
+
         }, containerRef);
         return () => ctx.revert();
     }, []);
@@ -84,37 +90,55 @@ const CompanyOverview = () => {
         }
     ];
 
-    // GSAP Hover Animation Helper
+    // --- INTERACTION HANDLERS ---
+    
     const handleMouseEnter = (index: number) => {
-        setHoveredIndex(index);
-        // Animate Title slightly to the right
-        gsap.to(`.company-title-${index}`, { x: 10, duration: 0.4, ease: "power2.out" });
+        // Desktop: Hover triggers active state
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            setActiveIndex(index);
+            gsap.to(`.company-title-${index}`, { x: 10, duration: 0.4, ease: "power2.out" });
+        }
     };
 
     const handleMouseLeave = (index: number) => {
-        setHoveredIndex(null);
-        // Reset Title position
-        gsap.to(`.company-title-${index}`, { x: 0, duration: 0.4, ease: "power2.out" });
+        // Desktop: Leave resets active state
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            setActiveIndex(null);
+            gsap.to(`.company-title-${index}`, { x: 0, duration: 0.4, ease: "power2.out" });
+        }
+    };
+
+    const handleClick = (index: number) => {
+        // Mobile: Tap toggles active state (Accordion style)
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            if (activeIndex === index) {
+                setActiveIndex(null); // Close if tapping same
+                gsap.to(`.company-title-${index}`, { x: 0, duration: 0.4, ease: "power2.out" });
+            } else {
+                setActiveIndex(index); // Open new
+                gsap.to(`.company-title-${index}`, { x: 10, duration: 0.4, ease: "power2.out" });
+            }
+        }
     };
 
     return (
-        <section ref={containerRef} className="relative w-full min-h-screen bg-[#0b0b0b] text-white pt-10 pb-32 px-6 overflow-hidden cursor-default">
+        <section ref={containerRef} className="relative w-full min-h-screen bg-[#0b0b0b] text-white pt-10 pb-32 px-4 md:px-6 overflow-hidden cursor-default">
             
             {/* Background Noise */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.05] z-0 mix-blend-overlay" style={{ backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/7/76/Noise.png")' }}></div>
 
             <div className="max-w-7xl mx-auto relative z-20">
-                <div className="text-center mb-20">
+                <div className="text-center mb-12 md:mb-20">
                     <motion.span 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="text-[#28a745] font-mono tracking-[0.2em] text-sm uppercase font-bold block mb-6"
+                        className="text-[#28a745] font-mono tracking-[0.2em] text-xs md:text-sm uppercase font-bold block mb-4 md:mb-6"
                     >
                         The Energica Story
                     </motion.span>
 
-                    <h1 className="text-6xl md:text-9xl font-black uppercase leading-[0.85] tracking-tighter">
+                    <h1 className="text-[12vw] md:text-9xl font-black uppercase leading-[0.85] tracking-tighter">
                         <div className="overflow-hidden">
                             <motion.span 
                                 initial={{ y: "100%" }} 
@@ -138,43 +162,44 @@ const CompanyOverview = () => {
                     </h1>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-32 items-start">
                     {content.map((item, index) => (
                         <div 
                             key={index} 
-                            // Hover handlers
+                            // Hover logic (Desktop)
                             onMouseEnter={() => handleMouseEnter(index)}
                             onMouseLeave={() => handleMouseLeave(index)}
-                            className={`group border-t border-gray-800 pt-12 ${index === 1 ? 'parallax-col md:mt-40' : ''} relative`}
+                            // Tap logic (Mobile)
+                            onClick={() => handleClick(index)}
+                            className={`group border-t border-gray-800 pt-8 md:pt-12 ${index === 1 ? 'parallax-col md:mt-40' : ''} relative cursor-pointer md:cursor-default`}
                         >
-                            {/* --- IMAGE BACKGROUND (Reveals on Hover) --- */}
+                            {/* --- IMAGE BACKGROUND (Reveals on Hover/Tap) --- */}
                             <AnimatePresence>
-                                {hoveredIndex === index && (
+                                {activeIndex === index && (
                                     <motion.div
-                                        // Animation: Scale down slightly and Fade in
                                         initial={{ opacity: 0, scale: 1.05 }} 
                                         animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 1.02 }} // Fade out slightly growing
-                                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} // Elegant ease
-                                        className="absolute -inset-6 z-0 rounded-2xl overflow-hidden pointer-events-none"
+                                        exit={{ opacity: 0, scale: 1.02 }} 
+                                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                        className="absolute -inset-4 md:-inset-6 z-0 rounded-2xl overflow-hidden pointer-events-none"
                                     >
                                         <img 
                                             src={item.src} 
                                             alt={item.title} 
-                                            className="w-full h-full object-cover opacity-60" // Reduced opacity so text pops more
+                                            className="w-full h-full object-cover opacity-60" 
                                         />
-                                        {/* Gradient Overlay for better text readability */}
+                                        {/* Gradient Overlay */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10"></div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
                             {/* --- TEXT CONTENT (Foreground) --- */}
-                            <div className="relative z-10 pointer-events-none">
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-[#28a745]' : 'bg-white'} transition-transform duration-300 group-hover:scale-150`}></div>
-                                    {/* Added class for GSAP targeting */}
-                                    <h3 className={`company-title-${index} text-3xl md:text-4xl font-bold uppercase text-white group-hover:text-[#28a745] transition-colors duration-300 drop-shadow-lg`}>
+                            <div className="relative z-10 pointer-events-none md:pointer-events-auto">
+                                <div className="flex items-center gap-4 mb-6 md:mb-8">
+                                    <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${index === 0 ? 'bg-[#28a745]' : 'bg-white'} transition-transform duration-300 ${activeIndex === index ? 'scale-150' : ''}`}></div>
+                                    
+                                    <h3 className={`company-title-${index} text-2xl md:text-4xl font-bold uppercase text-white transition-colors duration-300 drop-shadow-lg ${activeIndex === index ? 'text-[#28a745]' : ''}`}>
                                         {item.title}
                                     </h3>
                                 </div>
@@ -182,8 +207,13 @@ const CompanyOverview = () => {
                                 <div className="drop-shadow-xl">
                                     <MaskedText 
                                         text={item.text} 
-                                        className="text-gray-400 text-xl leading-[1.6] group-hover:text-white transition-colors duration-500" 
+                                        className={`text-lg md:text-xl leading-[1.6] transition-colors duration-500 ${activeIndex === index ? 'text-white' : 'text-gray-400'}`} 
                                     />
+                                </div>
+                                
+                                {/* Mobile Hint: Small text to indicate tap capability */}
+                                <div className={`md:hidden mt-4 text-xs font-mono text-[#28a745] transition-opacity duration-300 ${activeIndex === index ? 'opacity-0' : 'opacity-60'}`}>
+                                    [ Tap to Reveal ]
                                 </div>
                             </div>
                         </div>

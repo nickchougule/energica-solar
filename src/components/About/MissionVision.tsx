@@ -1,13 +1,15 @@
 // src/components/about/MissionVision.tsx
 import React, { useRef, useState, useEffect } from "react";
-import { motion, useInView, useSpring, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 
 // --- 1. UTILITY COMPONENTS ---
 
 // A. Animated Counter (Counts up from 0 to value)
 const Counter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
     const ref = useRef<HTMLSpanElement>(null);
-    const inView = useInView(ref, { once: true, margin: "-100px" });
+    // FIX: Changed margin from "-100px" to "-10px". 
+    // This ensures the animation triggers on mobile even if the element is near the bottom of the screen.
+    const inView = useInView(ref, { once: true, margin: "-10px" });
     
     useEffect(() => {
         if (inView && ref.current) {
@@ -83,7 +85,8 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
             onMouseMove={handleMouseMove}
             onMouseEnter={handleFocus}
             onMouseLeave={handleBlur}
-            className={`relative overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0a] ${className}`}
+            // Responsive border radius
+            className={`relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-[#0a0a0a] ${className}`}
         >
             {/* The Spotlight Gradient moving with mouse */}
             <motion.div
@@ -98,7 +101,7 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
             />
             {/* The Border Spotlight */}
             <motion.div
-                className="pointer-events-none absolute inset-0 z-10 rounded-3xl transition duration-300"
+                className="pointer-events-none absolute inset-0 z-10 rounded-2xl md:rounded-3xl transition duration-300"
                 style={{
                     opacity,
                     background: useTransform(
@@ -107,7 +110,6 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
                     ),
                 }}
                 // Mask composite to only show border
-                // Note: 'maskComposite' might need vendor prefix in some browsers, but works in modern ones
                 css={{
                     "-webkit-mask": "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                     maskComposite: "exclude",
@@ -123,41 +125,41 @@ const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode
 
 const MissionVision: React.FC = () => {
     return (
-        <section className="w-full bg-[#050505] py-32 px-6 min-h-screen relative overflow-hidden">
+        <section className="w-full bg-[#050505] py-16 md:py-32 px-4 md:px-6 min-h-screen relative overflow-hidden">
             
             {/* GLOBAL NOISE OVERLAY */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0 mix-blend-overlay" style={{ backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/7/76/Noise.png")' }}></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* HEADER */}
-                <div className="text-center mb-32">
+                <div className="text-center mb-16 md:mb-32">
                     <motion.span
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="inline-block px-4 py-2 bg-[#28a745]/10 border border-[#28a745]/30 rounded-full text-[#28a745] text-sm font-mono uppercase tracking-wider mb-6"
+                        className="inline-block px-3 py-1 md:px-4 md:py-2 bg-[#28a745]/10 border border-[#28a745]/30 rounded-full text-[#28a745] text-xs md:text-sm font-mono uppercase tracking-wider mb-4 md:mb-6"
                     >
                         Our Foundation
                     </motion.span>
-                    <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">
+                    <h2 className="text-4xl sm:text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none break-words">
                         <MaskedText text="Mission & Vision" />
                     </h2>
                 </div>
 
                 {/* --- MISSION CARD --- */}
-                <SpotlightCard className="mb-12 p-8 md:p-16 group">
-                    <div className="grid md:grid-cols-12 gap-12 items-start">
+                <SpotlightCard className="mb-8 md:mb-12 p-6 sm:p-8 md:p-16 group">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
                         <div className="md:col-span-4">
-                            <span className="text-[#28a745] font-mono text-xl uppercase tracking-widest block mb-4">01. Purpose</span>
-                            <h3 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
+                            <span className="text-[#28a745] font-mono text-lg md:text-xl uppercase tracking-widest block mb-2 md:mb-4">01. Purpose</span>
+                            <h3 className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
                                 MISSION
                             </h3>
                         </div>
                         <div className="md:col-span-8">
                             <MaskedText 
                                 text="To bridge the critical gap between technical feasibility and financial viability in renewable energy projects. We drive sustainable infrastructure development across India, aligning with government schemes like PM Surya Ghar and KUSUM Yojana to ensure energy security for all." 
-                                className="text-gray-300 text-xl md:text-3xl leading-relaxed font-light"
+                                className="text-gray-300 text-lg sm:text-xl md:text-3xl leading-relaxed font-light"
                                 delay={0.2}
                             />
                             
@@ -167,45 +169,50 @@ const MissionVision: React.FC = () => {
                                 whileInView={{ scaleX: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 1.5, delay: 0.5, ease: "circOut" }}
-                                className="h-px w-full bg-gradient-to-r from-[#28a745] to-transparent mt-12 origin-left"
+                                className="h-px w-full bg-gradient-to-r from-[#28a745] to-transparent mt-8 md:mt-12 origin-left"
                             />
                         </div>
                     </div>
                 </SpotlightCard>
 
                 {/* --- VISION CARD --- */}
-                <SpotlightCard className="p-8 md:p-16 group">
-                    <div className="grid md:grid-cols-12 gap-12 items-start">
+                <SpotlightCard className="p-6 sm:p-8 md:p-16 group">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+                        {/* On mobile, Title (order-2) stacks naturally AFTER Content (order-1) if not overridden.
+                            Here, we want Title FIRST on mobile (natural DOM order) and LAST on Desktop.
+                            Since Title is defined first in DOM, mobile is correct.
+                            On desktop, 'md:order-2' moves Title to the right, 'md:order-1' moves Content to left. 
+                        */}
                         <div className="md:col-span-4 md:order-2">
-                             <span className="text-[#28a745] font-mono text-xl uppercase tracking-widest block mb-4">02. Future</span>
-                             <h3 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
+                             <span className="text-[#28a745] font-mono text-lg md:text-xl uppercase tracking-widest block mb-2 md:mb-4">02. Future</span>
+                             <h3 className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-none tracking-tighter">
                                 VISION
                             </h3>
                         </div>
                         <div className="md:col-span-8 md:order-1">
                             <MaskedText 
                                 text="To be the most trusted technical and financial advisory in the renewable sector, recognized for our commitment to integrity and innovation, accelerating India's transition to 100% sustainable energy independence." 
-                                className="text-gray-300 text-xl md:text-3xl leading-relaxed font-light"
+                                className="text-gray-300 text-lg sm:text-xl md:text-3xl leading-relaxed font-light"
                                 delay={0.2}
                             />
                             
                             {/* STATS GRID */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 border-t border-white/10 pt-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-8 mt-12 md:mt-16 border-t border-white/10 pt-8 md:pt-10">
                                 <div>
-                                    <div className="text-5xl font-black text-white mb-2 flex">
+                                    <div className="text-4xl md:text-5xl font-black text-white mb-2 flex">
                                         <Counter value={100} suffix="%" />
                                     </div>
-                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Sustainable</p>
+                                    <p className="text-xs md:text-sm text-[#28a745] uppercase tracking-wider font-mono">Sustainable</p>
                                 </div>
                                 <div>
-                                    <div className="text-5xl font-black text-white mb-2 flex">
+                                    <div className="text-4xl md:text-5xl font-black text-white mb-2 flex">
                                         <span className="mr-1">#</span><Counter value={1} />
                                     </div>
-                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Trusted Partner</p>
+                                    <p className="text-xs md:text-sm text-[#28a745] uppercase tracking-wider font-mono">Trusted Partner</p>
                                 </div>
                                 <div>
-                                    <div className="text-5xl font-black text-white mb-2">∞</div>
-                                    <p className="text-sm text-[#28a745] uppercase tracking-wider font-mono">Innovation</p>
+                                    <div className="text-4xl md:text-5xl font-black text-white mb-2">∞</div>
+                                    <p className="text-xs md:text-sm text-[#28a745] uppercase tracking-wider font-mono">Innovation</p>
                                 </div>
                             </div>
                         </div>
@@ -213,20 +220,20 @@ const MissionVision: React.FC = () => {
                 </SpotlightCard>
 
                 {/* BOTTOM ACCENT */}
-                <div className="mt-32 text-center opacity-50">
-                    <div className="inline-flex items-center gap-4 text-gray-500 text-sm">
+                <div className="mt-16 md:mt-32 text-center opacity-50">
+                    <div className="inline-flex items-center gap-2 md:gap-4 text-gray-500 text-xs md:text-sm">
                          <motion.div 
                             initial={{ width: 0 }}
                             whileInView={{ width: 60 }}
                             transition={{ duration: 1 }}
-                            className="h-px bg-[#28a745]"
+                            className="h-px bg-[#28a745] w-[30px] md:w-[60px]" 
                         />
-                        <span className="font-mono uppercase tracking-widest">Building India's Green Future</span>
+                        <span className="font-mono uppercase tracking-widest whitespace-nowrap">Building India's Green Future</span>
                         <motion.div 
                             initial={{ width: 0 }}
                             whileInView={{ width: 60 }}
                             transition={{ duration: 1 }}
-                            className="h-px bg-[#28a745]"
+                            className="h-px bg-[#28a745] w-[30px] md:w-[60px]" 
                         />
                     </div>
                 </div>
