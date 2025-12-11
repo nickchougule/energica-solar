@@ -1,6 +1,6 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { gsap } from 'gsap';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/Energica.png';
 
@@ -9,17 +9,37 @@ const navItems = [
     { name: "Awareness Campaigns", id: "schemes" },
     { name: "Training Campaigns", id: "training" },
     { name: "Consultation", id: "consultation" },
-    // 👇 UPDATED: Changed path to "/contact"
     { name: "Contact Us", id: "contact", path: "/contact" } 
 ];
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isHidden, setIsHidden] = useState(false); // Controls navbar visibility
     const menuRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const navigate = useNavigate();
     const location = useLocation();
+    
+    // 1. SMART SCROLL LOGIC
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const previous = scrollY.getPrevious() || 0;
+        
+        // If we are at the very top, always show navbar
+        if (latest < 50) {
+            setIsHidden(false);
+        } 
+        // If scrolling DOWN and not at top -> Hide
+        else if (latest > previous && latest > 50) {
+            setIsHidden(true);
+        } 
+        // If scrolling UP -> Show
+        else if (latest < previous) {
+            setIsHidden(false);
+        }
+    });
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -69,12 +89,10 @@ const Navbar = () => {
         setTimeout(() => {
             if (path) navigate(path);
 
-            // Only smooth scroll when on the homepage
             if (id && location.pathname === "/" && path === "/") {
                 const el = document.getElementById(id);
                 if (el) el.scrollIntoView({ behavior: "smooth" });
             } else {
-                // For other pages (like Contact), scroll to top
                 window.scrollTo(0, 0);
             }
         }, 600);
@@ -82,7 +100,18 @@ const Navbar = () => {
 
     return (
         <div ref={containerRef}>
-            <nav className="fixed top-0 left-0 w-full z-[100] flex justify-between items-center px-6 md:px-10 py-4 bg-transparent text-white">
+            {/* 2. ANIMATED NAVBAR CONTAINER 
+               We use `motion.nav` to animate the Y position based on `isHidden`.
+            */}
+            <motion.nav 
+                className="fixed top-0 left-0 w-full z-[100] flex justify-between items-center px-6 md:px-10 py-4 bg-transparent text-white"
+                variants={{
+                    visible: { y: 0 },
+                    hidden: { y: "-100%" }, // Slide up out of view
+                }}
+                animate={isHidden ? "hidden" : "visible"}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+            >
 
                 {/* Logo */}
                 <motion.div
@@ -90,7 +119,8 @@ const Navbar = () => {
                     className="cursor-pointer z-[100]"
                     whileHover={{ scale: 1.05 }}
                 >
-                    <img src={logo} className="h-20 w-auto" alt="Logo" />
+                    {/* 3. RESPONSIVE LOGO SIZE: h-12 (48px) on mobile, h-20 (80px) on desktop */}
+                    <img src={logo} className="h-12 md:h-20 w-auto object-contain" alt="Logo" />
                 </motion.div>
 
                 {/* Hamburger */}
@@ -102,7 +132,7 @@ const Navbar = () => {
                     <span className="w-8 h-[2px] bg-[#28a745]"></span>
                     <span className="w-8 h-[2px] bg-[#28a745]"></span>
                 </motion.button>
-            </nav>
+            </motion.nav>
 
             {/* Full-screen menu */}
             <div

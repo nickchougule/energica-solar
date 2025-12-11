@@ -22,6 +22,9 @@ const Home = () => {
 
         {/* IMPACT STRIP */}
         <MarqueeSection />
+        <div id="tech">
+            <TechSection/>
+        </div>
 
         <InfoSection/>
 
@@ -38,9 +41,7 @@ const Home = () => {
         <FAQSection/>
 
         {/* CORE TECHNOLOGY */}
-        <div id="tech">
-            <TechSection/>
-        </div>
+        
 
         
 
