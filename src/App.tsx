@@ -11,6 +11,7 @@ import Footer from './pages/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import AwarenessCampaign from './components/AwarenessCampaign';
 import TrainingCampaign from './components/TrainingCampaign';
+import Consultation from './pages/Consultation';
 
 const AppContent = () => {
   const location = useLocation();
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/awarenesscompaign" element={<AwarenessCampaign/>}/>
           <Route path="/Training" element={<TrainingCampaign/>}/>
+          <Route path="/consultation" element={<Consultation/>}/>
         </Routes>
 
         <Footer/>

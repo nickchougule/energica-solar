@@ -53,13 +53,6 @@ const capacityBuilding = [
   }
 ];
 
-const consultation = [
-  { title: "Renewable Distressed Assets", desc: "Assessment, restructuring, technical due-diligence, and revival strategies for underperforming projects." },
-  { title: "Infrastructure Projects", desc: "Planning, design, and execution support for large-scale infrastructure—solar parks, transmission upgrades, and EV infrastructure." },
-  { title: "Renewable Energy Contracts", desc: "Assistance with drafting, reviewing, and managing EPC, O&M, PPA, and asset management contracts." },
-  { title: "Revival of Assets", desc: "Optimization, repowering, repairing, refinancing, and performance improvement solutions." }
-];
-
 const TrainingCampaign = () => {
   const container = useRef<HTMLDivElement>(null);
 
@@ -153,7 +146,7 @@ const TrainingCampaign = () => {
         <div className="mb-40">
           <div className="flex items-end justify-between mb-12">
             <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight">Current <span className="text-[#28a745]">Technology</span></h2>
-            <span className="hidden md:block font-mono text-gray-600">01 / 04</span>
+            <span className="hidden md:block font-mono text-gray-600">01 / 03</span>
           </div>
 
           <div className="border-t border-white/20">
@@ -205,7 +198,7 @@ const TrainingCampaign = () => {
         <div className="mb-40">
           <div className="flex items-end justify-between mb-12">
             <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight">New <span className="text-[#28a745]">Integrations</span></h2>
-            <span className="hidden md:block font-mono text-gray-600">02 / 04</span>
+            <span className="hidden md:block font-mono text-gray-600">02 / 03</span>
           </div>
 
           <div className="relative">
@@ -242,7 +235,7 @@ const TrainingCampaign = () => {
         <div className="mb-40">
            <div className="flex items-end justify-between mb-20">
             <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight">Capacity <span className="text-gray-600">Building</span></h2>
-            <span className="hidden md:block font-mono text-gray-600">03 / 04</span>
+            <span className="hidden md:block font-mono text-gray-600">03 / 03</span>
           </div>
 
           <div className="space-y-20">
@@ -263,43 +256,6 @@ const TrainingCampaign = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* --- SECTION 4: CONSULTATION (The List) --- */}
-        <div className="mb-20">
-          <div className="bg-[#111] p-8 md:p-16 relative overflow-hidden">
-            {/* Decorative Corner Lines */}
-            <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-[#28a745]"></div>
-            <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-[#28a745]"></div>
-
-            <div className="relative z-10 text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold uppercase mb-4">Consultation & <span className="text-[#28a745]">Revival</span></h2>
-              <p className="text-gray-500 font-mono text-sm">Strategic Advisory Services</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
-              {consultation.map((item, idx) => (
-                <div key={idx} className="spec-row">
-                  <div className="circuit-line w-12 h-1 bg-[#28a745] mb-4"></div>
-                  <h3 className="spec-content text-xl font-bold uppercase mb-3">{item.title}</h3>
-                  <p className="spec-content text-gray-400 leading-relaxed text-sm md:text-base">
-                    {item.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-20 text-center border-t border-white/10 pt-10">
-              <div className="inline-block border border-dashed border-white/30 p-4 rounded-lg mb-4">
-                <span className="font-mono text-xs text-[#28a745] animate-pulse">
-                  [ QR SCAN AREA ]
-                </span>
-              </div>
-              <p className="text-xs font-mono text-gray-500 tracking-widest uppercase">
-                Our Redirected Interest Scan Code
-              </p>
-            </div>
           </div>
         </div>
 

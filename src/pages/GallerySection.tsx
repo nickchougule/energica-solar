@@ -38,13 +38,21 @@ const GallerySection = () => {
         return () => ctx.revert();
     }, []);
 
-    // --- NAVIGATION HANDLER ---
+    // --- UPDATED NAVIGATION HANDLER ---
     const handleNavigation = () => {
-        // 1. Force Scroll to Top instantly to prevent "Dark Card" glitch on next page
-        window.scrollTo(0, 0);
-        
-        // 2. Navigate to the page
+        // 1. Navigate to the route
         navigate('/awarenesscompaign');
+        
+        // 2. FORCE Scroll to top instantly. 
+        // We use 'instant' behavior to prevent the browser from trying to smooth scroll 
+        // from the bottom (4000px) to the top, which causes the glitch.
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        
+        // 3. Redundant check: Set it again after a tiny delay 
+        // This catches cases where React Router takes a millisecond to mount the new page.
+        setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        }, 10);
     };
 
     const slides = [

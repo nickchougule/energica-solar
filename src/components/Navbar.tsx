@@ -8,7 +8,7 @@ const navItems = [
     { name: "About Us", id: "about", path: "/about" },
     { name: "Awareness Campaigns", id: "schemes" , path:"/awarenesscompaign" },
     { name: "Training Campaigns", id: "training",path:"/Training" },
-    { name: "Consultation", id: "consultation" },
+    { name: "Consultation", id: "consultation",path:"/consultation" },
     { name: "Contact Us", id: "contact", path: "/contact" } 
 ];
 
