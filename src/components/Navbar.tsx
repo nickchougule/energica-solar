@@ -6,8 +6,8 @@ import logo from '../assets/Energica.png';
 
 const navItems = [
     { name: "About Us", id: "about", path: "/about" },
-    { name: "Awareness Campaigns", id: "schemes" },
-    { name: "Training Campaigns", id: "training" },
+    { name: "Awareness Campaigns", id: "schemes" , path:"/awarenesscompaign" },
+    { name: "Training Campaigns", id: "training",path:"/Training" },
     { name: "Consultation", id: "consultation" },
     { name: "Contact Us", id: "contact", path: "/contact" } 
 ];

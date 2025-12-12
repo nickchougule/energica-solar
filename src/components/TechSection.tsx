@@ -1,6 +1,9 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
+// 1. ADD THIS IMPORT
+import { useNavigate } from 'react-router-dom';
+
 // IMPORT LOCAL IMAGES
 import grid from "../assets/Grid.avif";
 import hybrid from "../assets/Hybrid.avif";
@@ -12,6 +15,9 @@ const TechSection = () => {
     const container = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLHeadingElement>(null);
     const cardsContainerRef = useRef<HTMLDivElement>(null);
+    
+    // 2. INITIALIZE NAVIGATION
+    const navigate = useNavigate();
     
     // Track Active Card (for Mobile Click Logic)
     const [activeId, setActiveId] = useState<number | null>(null);
@@ -45,7 +51,6 @@ const TechSection = () => {
                 );
 
                 // 2. PARALLAX CARD ANIMATION
-                // Only run heavy parallax on desktop to save mobile battery/performance
                 if (!isMobile) {
                     const cards = gsap.utils.toArray(".tech-card-anim");
                     cards.forEach((card: any) => {
@@ -151,7 +156,7 @@ const TechSection = () => {
                         textShadow: "0 0 30px rgba(255,255,255,0.05)" 
                     }}
                 >
-                    CORE TECH
+                    EXPERTISE
                 </h1>
             </div>
 
@@ -246,7 +251,8 @@ const TechSection = () => {
                                             className="px-6 py-2 border border-[#28a745] text-[#28a745] hover:bg-[#28a745] hover:text-white uppercase text-xs font-bold tracking-widest transition-all duration-300"
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent closing card when clicking button
-                                                console.log(`Maps to ${tech.title}`);
+                                                // 3. UPDATED NAVIGATION
+                                                navigate('/Training');
                                             }}
                                         >
                                             Explore More

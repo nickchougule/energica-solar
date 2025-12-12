@@ -1,12 +1,14 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
+// 1. Import Link for navigation
+import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const AboutSection = () => {
-  const container = useRef<HTMLDivElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
+  const container = useRef(null);
+  const glowRef = useRef(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -60,6 +62,14 @@ const AboutSection = () => {
         stagger: 0.2
       }, "-=0.8");
 
+      // 6. Button Fade In (Added this animation)
+      tl.from(".cta-button", {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out"
+      }, "-=0.5");
+
     }, container);
 
     return () => ctx.revert();
@@ -86,7 +96,7 @@ const AboutSection = () => {
         </h2>
 
         {/* The grid container must NOT be text-center, but the grid items are left-aligned */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-left mb-16">
 
           {/* Column 1: Who We Are */}
           <div className="grid-item">
@@ -123,6 +133,25 @@ const AboutSection = () => {
           </div>
 
         </div>
+
+        {/* --- NEW BUTTON --- */}
+        <div className="cta-button flex justify-center">
+          <Link 
+            to="/about" 
+            className="group relative overflow-hidden rounded-full border border-[#28a745] px-10 py-4 font-mono text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#28a745]"
+          >
+            {/* 1. Initial Text (Slides up on hover) */}
+            <span className="inline-block text-[#28a745] transition-transform duration-300 group-hover:-translate-y-[150%] group-hover:text-black">
+              Get to know us
+            </span>
+
+            {/* 2. Hover Text (Slides in from bottom) */}
+            <span className="absolute left-0 top-0 flex h-full w-full items-center justify-center text-white translate-y-[150%] transition-transform duration-300 group-hover:translate-y-0">
+              About Us ↗
+            </span>
+          </Link>
+        </div>
+
       </div>
     </div>
   );

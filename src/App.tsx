@@ -9,6 +9,8 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage'; 
 import Footer from './pages/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import AwarenessCampaign from './components/AwarenessCampaign';
+import TrainingCampaign from './components/TrainingCampaign';
 
 const AppContent = () => {
   const location = useLocation();
@@ -52,6 +54,8 @@ const AppContent = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/awarenesscompaign" element={<AwarenessCampaign/>}/>
+          <Route path="/Training" element={<TrainingCampaign/>}/>
         </Routes>
 
         <Footer/>

@@ -1,7 +1,9 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
-// 1. IMPORT YOUR LOCAL IMAGES
+import { useNavigate } from 'react-router-dom';
+
+// IMPORT YOUR LOCAL IMAGES
 import PMSURYAGHAR from "../assets/PMSuryaGhar.avif";
 import solarRoof from "../assets/SolarInFarm.avif";
 import smartProgram from "../assets/SmartProgram.avif";
@@ -12,12 +14,12 @@ gsap.registerPlugin(ScrollTrigger);
 const GallerySection = () => {
     const component = useRef<HTMLDivElement>(null);
     const slider = useRef<HTMLDivElement>(null);
+    
+    const navigate = useNavigate();
 
     useLayoutEffect(() => {
         let ctx = gsap.context(() => {
             const panels = gsap.utils.toArray(".gallery-panel");
-            
-            // Check if mobile to adjust scroll speed
             const isMobile = window.innerWidth < 768;
 
             gsap.to(panels, {
@@ -28,16 +30,22 @@ const GallerySection = () => {
                     pin: true,
                     scrub: 1,
                     snap: 1 / (panels.length - 1),
-                    // Logic Adjustment: 
-                    // On mobile, we remove the division by 3. 
-                    // Mobile scrolling feels shorter, so we need the full width to make it feel smooth.
-                    end: () => "+=" + (slider.current.offsetWidth / (isMobile ? 1 : 3)), 
+                    end: () => "+=" + (slider.current!.offsetWidth / (isMobile ? 1 : 3)), 
                 }
             });
         }, component);
 
         return () => ctx.revert();
     }, []);
+
+    // --- NAVIGATION HANDLER ---
+    const handleNavigation = () => {
+        // 1. Force Scroll to Top instantly to prevent "Dark Card" glitch on next page
+        window.scrollTo(0, 0);
+        
+        // 2. Navigate to the page
+        navigate('/awarenesscompaign');
+    };
 
     const slides = [
         {
@@ -78,7 +86,6 @@ const GallerySection = () => {
                 <h2 className="text-3xl md:text-5xl font-bold uppercase">Key Solar Schemes</h2>
             </div>
 
-            {/* w-[400vw] ensures slides are side-by-side. h-[100dvh] fixes mobile browser bar issues */}
             <div ref={slider} className="w-[400vw] h-[100dvh] flex flex-nowrap">
 
                 {slides.map((slide, index) => (
@@ -94,13 +101,11 @@ const GallerySection = () => {
                                 className="w-full h-full object-cover opacity-60 transition-transform duration-700 hover:scale-105"
                                 loading="eager"
                             />
-                            {/* Gradient Overlay */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                         </div>
 
                         <div className="relative z-10 max-w-4xl px-6 md:px-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 mt-10 md:mt-0">
                             
-                            {/* Giant Number - Responsive Positioning & Size */}
                             <div className="text-[25vw] md:text-[12rem] font-bold text-white/10 absolute -top-16 left-4 md:-top-40 md:left-0 select-none z-0">
                                 0{index + 1}
                             </div>
@@ -110,7 +115,6 @@ const GallerySection = () => {
                                     {slide.subtitle}
                                 </span>
                                 
-                                {/* Responsive Title: Smaller on mobile to prevent wrapping/overflow */}
                                 <h3 className="text-4xl sm:text-5xl md:text-8xl font-bold uppercase leading-none mb-4 md:mb-6">
                                     {slide.title}
                                 </h3>
@@ -119,7 +123,10 @@ const GallerySection = () => {
                                     {slide.desc}
                                 </p>
                                 
-                                <button className="mt-6 md:mt-8 px-6 py-2 md:px-8 md:py-3 border border-[#28a745] text-[#28a745] text-xs md:text-sm tracking-widest uppercase hover:bg-[#28a745] hover:text-white transition-colors w-max mx-auto md:mx-0">
+                                <button 
+                                    onClick={handleNavigation}
+                                    className="mt-6 md:mt-8 px-6 py-2 md:px-8 md:py-3 border border-[#28a745] text-[#28a745] text-xs md:text-sm tracking-widest uppercase hover:bg-[#28a745] hover:text-white transition-colors w-max mx-auto md:mx-0"
+                                >
                                     Check Eligibility
                                 </button>
                             </div>
